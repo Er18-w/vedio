@@ -475,6 +475,7 @@ export default function Home() {
     end: number;
     next: InteractionStep;
   } | null>(null);
+  const frameCallbackRef = useRef<number | null>(null);
   const endingTimerRef = useRef<number | null>(null);
   const [answers, setAnswers] = useState<number[]>([]);
   const [submitted, setSubmitted] = useState(false);
@@ -553,10 +554,51 @@ export default function Home() {
 
   const enterQuiz = () => {
     videoRef.current?.pause();
+    if (
+      frameCallbackRef.current !== null &&
+      videoRef.current &&
+      "cancelVideoFrameCallback" in videoRef.current
+    ) {
+      videoRef.current.cancelVideoFrameCallback(frameCallbackRef.current);
+      frameCallbackRef.current = null;
+    }
     if (endingTimerRef.current !== null) {
       window.clearTimeout(endingTimerRef.current);
     }
     setEntered(true);
+  };
+
+  const finishInteractiveSegment = (
+    video: HTMLVideoElement,
+    segment: NonNullable<typeof segmentRef.current>,
+  ) => {
+    if (segmentRef.current !== segment || segment.next === "ended") return;
+    video.pause();
+    video.currentTime = segment.end;
+    segmentRef.current = null;
+    frameCallbackRef.current = null;
+    setIsSegmentPlaying(false);
+    setSegmentProgress(0);
+    setInteractionProgress(0);
+    setInteractionStep(segment.next);
+  };
+
+  const watchInteractiveFrames = (video: HTMLVideoElement) => {
+    if (!("requestVideoFrameCallback" in video)) return;
+    frameCallbackRef.current = video.requestVideoFrameCallback(
+      (_now, metadata) => {
+        const segment = segmentRef.current;
+        if (!segment || segment.next === "ended") {
+          frameCallbackRef.current = null;
+          return;
+        }
+        if (metadata.mediaTime >= segment.end - 1 / 60) {
+          finishInteractiveSegment(video, segment);
+          return;
+        }
+        watchInteractiveFrames(video);
+      },
+    );
   };
 
   const playGestureSegment = (step = interactionStep) => {
@@ -575,12 +617,12 @@ export default function Home() {
     gestureRef.current = null;
 
     if (step === "plane") {
-      segmentRef.current = { start: 0, end: 1.75, next: "zoom" };
+      segmentRef.current = { start: 0, end: 1.72, next: "zoom" };
       if (video.currentTime > 0.12) video.currentTime = 0;
     } else if (step === "zoom") {
-      segmentRef.current = { start: 1.75, end: 4.4, next: "bean" };
-      if (Math.abs(video.currentTime - 1.75) > 0.12) {
-        video.currentTime = 1.75;
+      segmentRef.current = { start: 1.72, end: 4.4, next: "bean" };
+      if (Math.abs(video.currentTime - 1.72) > 0.12) {
+        video.currentTime = 1.72;
       }
     } else {
       segmentRef.current = { start: 4.4, end: duration, next: "ended" };
@@ -597,7 +639,10 @@ export default function Home() {
       }, 5600);
     }
 
-    void video.play().catch(() => setIsSegmentPlaying(false));
+    void video
+      .play()
+      .then(() => watchInteractiveFrames(video))
+      .catch(() => setIsSegmentPlaying(false));
   };
 
   const startGesture = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -651,6 +696,14 @@ export default function Home() {
 
   const skipVideo = () => {
     const video = videoRef.current;
+    if (
+      frameCallbackRef.current !== null &&
+      video &&
+      "cancelVideoFrameCallback" in video
+    ) {
+      video.cancelVideoFrameCallback(frameCallbackRef.current);
+      frameCallbackRef.current = null;
+    }
     if (endingTimerRef.current !== null) {
       window.clearTimeout(endingTimerRef.current);
     }
@@ -709,6 +762,13 @@ export default function Home() {
 
   useEffect(
     () => () => {
+      if (
+        frameCallbackRef.current !== null &&
+        videoRef.current &&
+        "cancelVideoFrameCallback" in videoRef.current
+      ) {
+        videoRef.current.cancelVideoFrameCallback(frameCallbackRef.current);
+      }
       if (endingTimerRef.current !== null) {
         window.clearTimeout(endingTimerRef.current);
       }
@@ -761,13 +821,7 @@ export default function Home() {
                     segment.next !== "ended" &&
                     video.currentTime >= segment.end
                   ) {
-                    video.pause();
-                    video.currentTime = segment.end;
-                    segmentRef.current = null;
-                    setIsSegmentPlaying(false);
-                    setSegmentProgress(0);
-                    setInteractionProgress(0);
-                    setInteractionStep(segment.next);
+                    finishInteractiveSegment(video, segment);
                   }
                 }
                 if (
@@ -777,14 +831,10 @@ export default function Home() {
                   setVideoReveal(true);
                 }
               }}
-              onEnded={() => {
+              onEnded={(event) => {
                 const segment = segmentRef.current;
                 if (segment && segment.next !== "ended") {
-                  segmentRef.current = null;
-                  setIsSegmentPlaying(false);
-                  setSegmentProgress(0);
-                  setInteractionProgress(0);
-                  setInteractionStep(segment.next);
+                  finishInteractiveSegment(event.currentTarget, segment);
                   return;
                 }
                 if (interactionStep !== "falling") return;
