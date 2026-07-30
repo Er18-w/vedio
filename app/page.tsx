@@ -1281,23 +1281,37 @@ function Result({
         className="result-hero"
         style={{ "--result-color": p.color } as React.CSSProperties}
       >
+        <div className="result-mini-nav" aria-hidden="true">
+          <span>profile</span>
+          <span>bean</span>
+          <span>flavor</span>
+        </div>
         <div className="result-copy">
           <p className="eyebrow">YOUR CBTI PROFILE</p>
           <span className="blend-pill">{sameFamily ? "同家族双拼" : "跨风味拼配"}</span>
           <h2>
-            你是 <em>{p.name}</em>
+            <small>你是</small>
+            <em>{p.name}</em>
+            <sup>*</sup>
           </h2>
           <h3>{primary} · {p.title}</h3>
           <p className="result-verdict">“{p.verdict}”</p>
         </div>
         <div className="result-character">
           <BeanCharacter code={primary} />
-          <span>{p.archetype}</span>
+          <span className="result-bean-label">{p.archetype}</span>
         </div>
       </header>
 
+      <div className="result-ticker" aria-hidden="true">
+        <div>
+          <span>{p.name} · {p.archetype} · YOUR YUNNAN FLAVOR ·</span>
+          <span>{p.name} · {p.archetype} · YOUR YUNNAN FLAVOR ·</span>
+        </div>
+      </div>
+
       <section className="result-intro">
-        <span className="section-number">01</span>
+        <span className="section-number"><b>01</b><small>BEAN PROFILE</small></span>
         <div>
           <p className="section-label">你的豆格原型</p>
           <h3>{p.intro}</h3>
@@ -1314,6 +1328,11 @@ function Result({
           <h3>{p.hidden}</h3>
         </div>
       </section>
+
+      <div className="result-section-heading">
+        <p>TRAITS IN YOUR CUP</p>
+        <h3>你的性格配方<sup>*</sup></h3>
+      </div>
 
       <section className="skills-grid">
         <div className="skill-card good">

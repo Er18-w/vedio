@@ -55,5 +55,7 @@ test("keeps all questions, page-turn flow, and normalized scoring in source", as
   assert.match(page, /展开完整解释/);
   assert.match(page, /whyCoffee/);
   assert.match(page, /K72通常指累计约72小时/);
+  assert.match(page, /你的性格配方/);
+  assert.match(page, /YOUR YUNNAN FLAVOR/);
   assert.doesNotMatch(page, /scrollIntoView/);
 });
