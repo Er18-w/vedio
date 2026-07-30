@@ -615,14 +615,15 @@ export default function Home() {
     setSegmentProgress(0);
     setIsSegmentPlaying(true);
     gestureRef.current = null;
+    video.playbackRate = step === "plane" ? 0.9 : step === "zoom" ? 0.72 : 1;
 
     if (step === "plane") {
-      segmentRef.current = { start: 0, end: 1.72, next: "zoom" };
+      segmentRef.current = { start: 0, end: 2.86, next: "zoom" };
       if (video.currentTime > 0.12) video.currentTime = 0;
     } else if (step === "zoom") {
-      segmentRef.current = { start: 1.72, end: 4.4, next: "bean" };
-      if (Math.abs(video.currentTime - 1.72) > 0.12) {
-        video.currentTime = 1.72;
+      segmentRef.current = { start: 2.86, end: 4.4, next: "bean" };
+      if (Math.abs(video.currentTime - 2.86) > 0.12) {
+        video.currentTime = 2.86;
       }
     } else {
       segmentRef.current = { start: 4.4, end: duration, next: "ended" };
