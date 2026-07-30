@@ -489,6 +489,7 @@ export default function Home() {
   const [interactionProgress, setInteractionProgress] = useState(0);
   const [segmentProgress, setSegmentProgress] = useState(0);
   const [isSegmentPlaying, setIsSegmentPlaying] = useState(false);
+  const [beanTransferDone, setBeanTransferDone] = useState(false);
 
   const ranking = useMemo(() => {
     const raw = Object.fromEntries(
@@ -571,14 +572,14 @@ export default function Home() {
     gestureRef.current = null;
 
     if (step === "plane") {
-      segmentRef.current = { start: 0, end: 6.5, next: "zoom" };
+      segmentRef.current = { start: 0, end: 1.75, next: "zoom" };
       video.currentTime = 0;
     } else if (step === "zoom") {
-      segmentRef.current = { start: 6.5, end: 9, next: "bean" };
-      video.currentTime = 6.5;
+      segmentRef.current = { start: 1.75, end: 4.4, next: "bean" };
+      video.currentTime = 1.75;
     } else {
-      segmentRef.current = { start: 9, end: duration, next: "ended" };
-      video.currentTime = 9;
+      segmentRef.current = { start: 4.4, end: duration, next: "ended" };
+      video.currentTime = 4.4;
       setInteractionStep("falling");
       if (endingTimerRef.current !== null) {
         window.clearTimeout(endingTimerRef.current);
@@ -586,7 +587,7 @@ export default function Home() {
       endingTimerRef.current = window.setTimeout(() => {
         setVideoReveal(true);
         setInteractionStep("ended");
-      }, 9100);
+      }, 5600);
     }
 
     void video.play().catch(() => setIsSegmentPlaying(false));
@@ -693,6 +694,12 @@ export default function Home() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [answers.length, choose, entered, goBack, submitted]);
 
+  useEffect(() => {
+    if (!entered || beanTransferDone) return;
+    const timer = window.setTimeout(() => setBeanTransferDone(true), 1250);
+    return () => window.clearTimeout(timer);
+  }, [beanTransferDone, entered]);
+
   useEffect(
     () => () => {
       if (endingTimerRef.current !== null) {
@@ -706,7 +713,15 @@ export default function Home() {
     <ClickSpark className="experience-root" color="#ffd27a" count={12} radius={32}>
       <main className={entered ? "is-entered" : "is-intro"}>
         {!entered && (
-          <section className={`cinematic-intro ${videoReveal ? "is-revealed" : ""}`} id="home">
+          <section
+            className={`cinematic-intro ${videoReveal ? "is-revealed" : ""}`}
+            id="home"
+            style={
+              {
+                "--gesture-progress": interactionProgress,
+              } as React.CSSProperties
+            }
+          >
             <video
               ref={videoRef}
               className="intro-video"
@@ -954,10 +969,16 @@ export default function Home() {
         )}
 
         {entered && (
-          <section className={`quiz-section ${submitted ? "has-submission" : ""}`} id="quiz">
+          <section
+            className={`quiz-section ${submitted ? "has-submission" : ""} ${
+              beanTransferDone ? "bean-arrived" : "bean-transferring"
+            }`}
+            id="quiz"
+          >
             <div className="quiz-cloud cloud-one" aria-hidden="true" />
             <div className="quiz-cloud cloud-two" aria-hidden="true" />
         <div className="quiz-shell">
+          {!beanTransferDone && <span className="bean-transfer" aria-hidden="true" />}
           <header className="quiz-topbar">
             <button className="quiz-brand" onClick={restart} aria-label="重新开始测试">
               <span className="brand-bean" aria-hidden="true" />

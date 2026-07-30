@@ -101,6 +101,25 @@ button {
   object-fit: cover;
   object-position: center;
   user-select: none;
+  transform-origin: center;
+  transition: transform 0.035s linear;
+  will-change: transform;
+}
+
+.cinematic-intro:has(.step-plane:not(.is-playing)) .intro-video {
+  transform:
+    translate3d(calc(var(--gesture-progress) * 18px), 0, 0)
+    scale(calc(1 + var(--gesture-progress) * 0.012));
+}
+
+.cinematic-intro:has(.step-zoom:not(.is-playing)) .intro-video {
+  transform: scale(calc(1 + var(--gesture-progress) * 0.075));
+}
+
+.cinematic-intro:has(.step-bean:not(.is-playing)) .intro-video {
+  transform:
+    translate3d(0, calc(var(--gesture-progress) * 14px), 0)
+    scale(calc(1 + var(--gesture-progress) * 0.018));
 }
 
 .intro-wash {
@@ -169,20 +188,13 @@ button {
   height: 44px;
   display: inline-block;
   flex: 0 0 auto;
-  border-radius: 50% 48% 48% 52%;
   position: relative;
-  background: linear-gradient(145deg, #f5c36f, #a94d2c);
-  box-shadow: inset -5px -5px 0 rgba(62, 30, 17, 0.18), 0 8px 20px rgba(24, 14, 10, 0.16);
-  transform: rotate(8deg);
+  background: url("/images/ordinary-bean.png") center / contain no-repeat;
+  filter: drop-shadow(0 7px 8px rgba(35, 20, 13, 0.24));
 }
 
 .brand-bean::after {
-  content: "";
-  position: absolute;
-  inset: 4px 45% 4px 43%;
-  border-left: 2px solid rgba(72, 33, 18, 0.5);
-  border-radius: 50%;
-  transform: rotate(9deg);
+  display: none;
 }
 
 .intro-controls {
@@ -745,6 +757,8 @@ button {
 }
 
 .quiz-shell {
+  --bean-transfer-x: 215px;
+  --bean-transfer-y: 48px;
   position: relative;
   z-index: 2;
   width: min(1700px, calc(100% - 64px));
@@ -752,6 +766,49 @@ button {
   margin: 0 auto;
   display: flex;
   flex-direction: column;
+}
+
+.bean-transfer {
+  position: absolute;
+  z-index: 9;
+  left: 0;
+  top: 19px;
+  width: 34px;
+  height: 44px;
+  pointer-events: none;
+  background: url("/images/ordinary-bean.png") center / contain no-repeat;
+  filter: drop-shadow(0 8px 8px rgba(77, 42, 24, 0.24));
+  transform-origin: 50% 88%;
+  animation: bean-transfer-to-track 1.2s cubic-bezier(0.34, 0.08, 0.18, 1) both;
+}
+
+@keyframes bean-transfer-to-track {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate(0) scale(1);
+  }
+  28% {
+    opacity: 1;
+    transform: translate3d(58px, -13px, 0) rotate(9deg) scale(1.04);
+  }
+  76% {
+    opacity: 1;
+    transform:
+      translate3d(
+        var(--bean-transfer-x),
+        calc(var(--bean-transfer-y) - 12px),
+        0
+      )
+      rotate(-7deg)
+      scale(1.18);
+  }
+  100% {
+    opacity: 0;
+    transform:
+      translate3d(var(--bean-transfer-x), var(--bean-transfer-y), 0)
+      rotate(0)
+      scale(1.32);
+  }
 }
 
 .quiz-topbar {
@@ -763,11 +820,56 @@ button {
 }
 
 .quiz-brand {
+  --quiz-brand-bean-width: 34px;
   padding: 0;
   border: 0;
   background: transparent;
   cursor: pointer;
   text-align: left;
+}
+
+.bean-transferring .quiz-brand {
+  animation: quiz-brand-close-gap 1.2s ease both;
+}
+
+.bean-transferring .quiz-brand .brand-bean {
+  animation: quiz-brand-bean-depart 1.2s ease both;
+}
+
+.bean-arrived .quiz-brand {
+  gap: 0;
+}
+
+.bean-arrived .quiz-brand .brand-bean {
+  width: 0;
+  opacity: 0;
+}
+
+@keyframes quiz-brand-bean-depart {
+  0%,
+  12% {
+    width: var(--quiz-brand-bean-width);
+    opacity: 1;
+  }
+  22%,
+  70% {
+    width: var(--quiz-brand-bean-width);
+    opacity: 0;
+  }
+  100% {
+    width: 0;
+    opacity: 0;
+  }
+}
+
+@keyframes quiz-brand-close-gap {
+  0%,
+  72% {
+    gap: 13px;
+  }
+  100% {
+    gap: 0;
+  }
 }
 
 .quiz-brand b {
@@ -878,8 +980,15 @@ button {
   width: 50px;
   height: 61px;
   pointer-events: none;
+  opacity: 0;
   transform: translateX(-50%);
-  transition: left 0.52s cubic-bezier(0.22, 1, 0.36, 1);
+  transition:
+    left 0.52s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.16s ease;
+}
+
+.bean-arrived .progress-runner {
+  opacity: 1;
 }
 
 .progress-runner::after {
@@ -1699,6 +1808,8 @@ footer {
 @media (max-width: 900px) {
   .shell,
   .quiz-shell {
+    --bean-transfer-x: 112px;
+    --bean-transfer-y: 36px;
     width: min(100% - 30px, 1700px);
   }
 
@@ -1949,6 +2060,21 @@ footer {
   }
 
   .quiz-brand .brand-bean {
+    width: var(--quiz-brand-bean-width);
+    height: 32px;
+  }
+
+  .quiz-brand {
+    --quiz-brand-bean-width: 25px;
+  }
+
+  .quiz-shell {
+    --bean-transfer-x: 107px;
+    --bean-transfer-y: 40px;
+  }
+
+  .bean-transfer {
+    top: 14px;
     width: 25px;
     height: 32px;
   }
