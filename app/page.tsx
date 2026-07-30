@@ -490,6 +490,12 @@ export default function Home() {
   const [segmentProgress, setSegmentProgress] = useState(0);
   const [isSegmentPlaying, setIsSegmentPlaying] = useState(false);
   const [beanTransferDone, setBeanTransferDone] = useState(false);
+  const introVideoSource =
+    interactionStep === "plane"
+      ? "/media/cbti-intro.mp4"
+      : interactionStep === "zoom"
+        ? "/media/cbti-zoom.mp4"
+        : "/media/cbti-drop.mp4";
 
   const ranking = useMemo(() => {
     const raw = Object.fromEntries(
@@ -565,21 +571,26 @@ export default function Home() {
       return;
     }
 
-    const duration = Number.isFinite(video.duration) ? video.duration : 22.08;
+    const fallbackDuration =
+      step === "plane" ? 1.75 : step === "zoom" ? 2.65 : 9.57;
+    const duration =
+      Number.isFinite(video.duration) && video.duration > 0
+        ? video.duration
+        : fallbackDuration;
     setInteractionProgress(0);
     setSegmentProgress(0);
     setIsSegmentPlaying(true);
     gestureRef.current = null;
 
     if (step === "plane") {
-      segmentRef.current = { start: 0, end: 1.75, next: "zoom" };
+      segmentRef.current = { start: 0, end: duration, next: "zoom" };
       video.currentTime = 0;
     } else if (step === "zoom") {
-      segmentRef.current = { start: 1.75, end: 4.4, next: "bean" };
-      video.currentTime = 1.75;
+      segmentRef.current = { start: 0, end: duration, next: "bean" };
+      video.currentTime = 0;
     } else {
-      segmentRef.current = { start: 4.4, end: duration, next: "ended" };
-      video.currentTime = 4.4;
+      segmentRef.current = { start: 0, end: duration, next: "ended" };
+      video.currentTime = 0;
       setInteractionStep("falling");
       if (endingTimerRef.current !== null) {
         window.clearTimeout(endingTimerRef.current);
@@ -723,9 +734,10 @@ export default function Home() {
             }
           >
             <video
+              key={introVideoSource}
               ref={videoRef}
               className="intro-video"
-              src="/media/cbti-intro.mp4"
+              src={introVideoSource}
               poster="/media/cbti-intro-poster.jpg"
               muted={muted}
               playsInline
@@ -762,11 +774,24 @@ export default function Home() {
                     setInteractionStep(segment.next);
                   }
                 }
-                if (video.duration - video.currentTime <= 4.25) {
+                if (
+                  interactionStep === "falling" &&
+                  video.duration - video.currentTime <= 4.25
+                ) {
                   setVideoReveal(true);
                 }
               }}
               onEnded={() => {
+                const segment = segmentRef.current;
+                if (segment && segment.next !== "ended") {
+                  segmentRef.current = null;
+                  setIsSegmentPlaying(false);
+                  setSegmentProgress(0);
+                  setInteractionProgress(0);
+                  setInteractionStep(segment.next);
+                  return;
+                }
+                if (interactionStep !== "falling") return;
                 if (endingTimerRef.current !== null) {
                   window.clearTimeout(endingTimerRef.current);
                 }
