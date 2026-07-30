@@ -490,12 +490,6 @@ export default function Home() {
   const [segmentProgress, setSegmentProgress] = useState(0);
   const [isSegmentPlaying, setIsSegmentPlaying] = useState(false);
   const [beanTransferDone, setBeanTransferDone] = useState(false);
-  const introVideoSource =
-    interactionStep === "plane"
-      ? "/media/cbti-intro.mp4"
-      : interactionStep === "zoom"
-        ? "/media/cbti-zoom.mp4"
-        : "/media/cbti-drop.mp4";
 
   const ranking = useMemo(() => {
     const raw = Object.fromEntries(
@@ -571,26 +565,28 @@ export default function Home() {
       return;
     }
 
-    const fallbackDuration =
-      step === "plane" ? 1.75 : step === "zoom" ? 2.65 : 9.57;
     const duration =
       Number.isFinite(video.duration) && video.duration > 0
         ? video.duration
-        : fallbackDuration;
+        : 13.97;
     setInteractionProgress(0);
     setSegmentProgress(0);
     setIsSegmentPlaying(true);
     gestureRef.current = null;
 
     if (step === "plane") {
-      segmentRef.current = { start: 0, end: duration, next: "zoom" };
-      video.currentTime = 0;
+      segmentRef.current = { start: 0, end: 1.75, next: "zoom" };
+      if (video.currentTime > 0.12) video.currentTime = 0;
     } else if (step === "zoom") {
-      segmentRef.current = { start: 0, end: duration, next: "bean" };
-      video.currentTime = 0;
+      segmentRef.current = { start: 1.75, end: 4.4, next: "bean" };
+      if (Math.abs(video.currentTime - 1.75) > 0.12) {
+        video.currentTime = 1.75;
+      }
     } else {
-      segmentRef.current = { start: 0, end: duration, next: "ended" };
-      video.currentTime = 0;
+      segmentRef.current = { start: 4.4, end: duration, next: "ended" };
+      if (Math.abs(video.currentTime - 4.4) > 0.12) {
+        video.currentTime = 4.4;
+      }
       setInteractionStep("falling");
       if (endingTimerRef.current !== null) {
         window.clearTimeout(endingTimerRef.current);
@@ -734,10 +730,9 @@ export default function Home() {
             }
           >
             <video
-              key={introVideoSource}
               ref={videoRef}
               className="intro-video"
-              src={introVideoSource}
+              src="/media/cbti-intro.mp4"
               poster="/media/cbti-intro-poster.jpg"
               muted={muted}
               playsInline
@@ -808,10 +803,6 @@ export default function Home() {
                 setInteractionStep("ended");
               }}
             />
-            <div className="segment-preloads" aria-hidden="true">
-              <video src="/media/cbti-zoom.mp4" muted playsInline preload="auto" />
-              <video src="/media/cbti-drop.mp4" muted playsInline preload="auto" />
-            </div>
             <div className="intro-wash" aria-hidden="true" />
 
             <header className="intro-topbar">
@@ -882,14 +873,12 @@ export default function Home() {
                     <div className="gesture-copy">
                       <span className="gesture-kicker">
                         {isSegmentPlaying
-                          ? "动画进行中"
-                          : `互动 ${
-                              interactionStep === "plane"
-                                ? "1"
-                                : interactionStep === "zoom"
-                                  ? "2"
-                                  : "3"
-                            } / 3`}
+                          ? "故事继续"
+                          : interactionStep === "plane"
+                            ? "云层正在等你"
+                            : interactionStep === "zoom"
+                              ? "再靠近一点"
+                              : "别让它躲过去"}
                       </span>
                       <strong>
                         {interactionStep === "plane" &&
@@ -904,16 +893,16 @@ export default function Home() {
                           "这颗豆不想掉——把它往下拽"}
                       </strong>
                       <small>
-                        {isSegmentPlaying && "已经感受到你的手势，画面会连续播放"}
+                        {isSegmentPlaying && "松开就好，镜头会自然走到下一幕"}
                         {!isSegmentPlaying &&
                           interactionStep === "plane" &&
-                          "轻轻向右一划，动画就会自己继续"}
+                          "按住画面，向右轻轻一划"}
                         {!isSegmentPlaying &&
                           interactionStep === "zoom" &&
-                          "向右或向上一划，让镜头自动靠近"}
+                          "按住画面，向右或向上轻轻一划"}
                         {!isSegmentPlaying &&
                           interactionStep === "bean" &&
-                          "向下一划，看它一路掉进云南"}
+                          "按住这颗豆，向下一划"}
                       </small>
                     </div>
                     <div className="gesture-meter" aria-hidden="true">
@@ -936,7 +925,7 @@ export default function Home() {
                           playGestureSegment();
                         }}
                       >
-                        轻触也可以
+                        轻轻一点
                       </button>
                     )}
                   </div>
@@ -944,13 +933,13 @@ export default function Home() {
                   <div className="falling-cue" aria-live="polite">
                     <span className="falling-dot" />
                     <span>
-                      <small>连续动画播放中</small>
+                      <small>故事继续</small>
                       <strong>松手——它掉下去了</strong>
                     </span>
                   </div>
                 )}
 
-                <div className="chapter-dots" aria-label="互动进度">
+                <div className="chapter-dots" aria-label="故事进度">
                   {(["plane", "zoom", "bean"] as InteractionStep[]).map((step, index) => (
                     <span
                       key={step}
