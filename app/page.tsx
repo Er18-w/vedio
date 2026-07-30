@@ -732,7 +732,7 @@ export default function Home() {
             <video
               ref={videoRef}
               className="intro-video"
-              src="/media/cbti-intro.mp4"
+              src="/media/cbti-story-continuous.mp4"
               poster="/media/cbti-intro-poster.jpg"
               muted={muted}
               playsInline

@@ -33,7 +33,7 @@ test("server-renders the interactive CBTI opening", async () => {
   assert.match(html, /咖啡豆型/);
   assert.match(html, /人格测试/);
   assert.match(html, /把“丝绸号”拉出云端/);
-  assert.match(html, /\/media\/cbti-intro\.mp4/);
+  assert.match(html, /\/media\/cbti-story-continuous\.mp4/);
   assert.doesNotMatch(html, /codex-preview|Your site is taking shape|SkeletonPreview/i);
 });
 
