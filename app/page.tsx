@@ -468,6 +468,12 @@ export default function Home() {
     startX: number;
     startY: number;
     startProgress: number;
+    currentProgress: number;
+  } | null>(null);
+  const segmentRef = useRef<{
+    start: number;
+    end: number;
+    next: InteractionStep;
   } | null>(null);
   const endingTimerRef = useRef<number | null>(null);
   const [answers, setAnswers] = useState<number[]>([]);
@@ -481,6 +487,8 @@ export default function Home() {
   const [interactionStep, setInteractionStep] =
     useState<InteractionStep>("plane");
   const [interactionProgress, setInteractionProgress] = useState(0);
+  const [segmentProgress, setSegmentProgress] = useState(0);
+  const [isSegmentPlaying, setIsSegmentPlaying] = useState(false);
 
   const ranking = useMemo(() => {
     const raw = Object.fromEntries(
@@ -550,46 +558,54 @@ export default function Home() {
     setEntered(true);
   };
 
-  const seekVideo = (time: number) => {
+  const playGestureSegment = (step = interactionStep) => {
     const video = videoRef.current;
-    if (!video || !Number.isFinite(video.duration)) return;
-    video.currentTime = Math.min(video.duration, Math.max(0, time));
-  };
+    if (!video || isSegmentPlaying || !["plane", "zoom", "bean"].includes(step)) {
+      return;
+    }
 
-  const finishGestureStep = (step = interactionStep) => {
-    const video = videoRef.current;
+    const duration = Number.isFinite(video.duration) ? video.duration : 22.08;
     setInteractionProgress(0);
+    setSegmentProgress(0);
+    setIsSegmentPlaying(true);
     gestureRef.current = null;
 
     if (step === "plane") {
-      seekVideo(6.5);
-      setInteractionStep("zoom");
-      return;
-    }
-    if (step === "zoom") {
-      seekVideo(9);
-      setInteractionStep("bean");
-      return;
-    }
-    if (step === "bean") {
-      seekVideo(11.7);
+      segmentRef.current = { start: 0, end: 6.5, next: "zoom" };
+      video.currentTime = 0;
+    } else if (step === "zoom") {
+      segmentRef.current = { start: 6.5, end: 9, next: "bean" };
+      video.currentTime = 6.5;
+    } else {
+      segmentRef.current = { start: 9, end: duration, next: "ended" };
+      video.currentTime = 9;
       setInteractionStep("falling");
-      window.setTimeout(() => video?.play().catch(() => undefined), 60);
+      if (endingTimerRef.current !== null) {
+        window.clearTimeout(endingTimerRef.current);
+      }
       endingTimerRef.current = window.setTimeout(() => {
         setVideoReveal(true);
         setInteractionStep("ended");
-      }, 6400);
+      }, 9100);
     }
+
+    void video.play().catch(() => setIsSegmentPlaying(false));
   };
 
   const startGesture = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!["plane", "zoom", "bean"].includes(interactionStep)) return;
+    if (
+      isSegmentPlaying ||
+      !["plane", "zoom", "bean"].includes(interactionStep)
+    ) {
+      return;
+    }
     event.currentTarget.setPointerCapture(event.pointerId);
     gestureRef.current = {
       pointerId: event.pointerId,
       startX: event.clientX,
       startY: event.clientY,
       startProgress: interactionProgress,
+      currentProgress: interactionProgress,
     };
   };
 
@@ -601,19 +617,16 @@ export default function Home() {
     const dy = event.clientY - gesture.startY;
     const distance =
       interactionStep === "plane"
-        ? dx / 270
+        ? dx / 120
         : interactionStep === "zoom"
-          ? Math.max(dx / 200, -dy / 200)
-          : dy / 220;
+          ? Math.max(dx / 110, -dy / 110)
+          : dy / 120;
     const progress = Math.min(1, Math.max(0, gesture.startProgress + distance));
+    gesture.currentProgress = progress;
     setInteractionProgress(progress);
 
-    if (interactionStep === "plane") seekVideo(progress * 6.5);
-    if (interactionStep === "zoom") seekVideo(6.5 + progress * 2.5);
-    if (interactionStep === "bean") seekVideo(9 + progress * 2.7);
-
-    if (progress >= 0.98) {
-      finishGestureStep(interactionStep);
+    if (progress >= 0.55) {
+      playGestureSegment(interactionStep);
     }
   };
 
@@ -621,6 +634,11 @@ export default function Home() {
     const gesture = gestureRef.current;
     if (!gesture || gesture.pointerId !== event.pointerId) return;
     gestureRef.current = null;
+    if (gesture.currentProgress >= 0.2) {
+      playGestureSegment(interactionStep);
+      return;
+    }
+    setInteractionProgress(0);
   };
 
   const skipVideo = () => {
@@ -631,6 +649,9 @@ export default function Home() {
     setVideoReveal(true);
     setInteractionStep("ended");
     setInteractionProgress(0);
+    setSegmentProgress(0);
+    setIsSegmentPlaying(false);
+    segmentRef.current = null;
     if (!video) return;
     if (Number.isFinite(video.duration)) {
       video.currentTime = Math.max(0, video.duration - 1.25);
@@ -701,6 +722,31 @@ export default function Home() {
               }}
               onTimeUpdate={(event) => {
                 const video = event.currentTarget;
+                const segment = segmentRef.current;
+                if (segment) {
+                  const progress = Math.min(
+                    1,
+                    Math.max(
+                      0,
+                      (video.currentTime - segment.start) /
+                        (segment.end - segment.start),
+                    ),
+                  );
+                  setSegmentProgress(progress);
+
+                  if (
+                    segment.next !== "ended" &&
+                    video.currentTime >= segment.end
+                  ) {
+                    video.pause();
+                    video.currentTime = segment.end;
+                    segmentRef.current = null;
+                    setIsSegmentPlaying(false);
+                    setSegmentProgress(0);
+                    setInteractionProgress(0);
+                    setInteractionStep(segment.next);
+                  }
+                }
                 if (video.duration - video.currentTime <= 4.25) {
                   setVideoReveal(true);
                 }
@@ -709,10 +755,15 @@ export default function Home() {
                 if (endingTimerRef.current !== null) {
                   window.clearTimeout(endingTimerRef.current);
                 }
+                segmentRef.current = null;
+                setIsSegmentPlaying(false);
+                setSegmentProgress(1);
                 setVideoReveal(true);
                 setInteractionStep("ended");
               }}
               onError={() => {
+                segmentRef.current = null;
+                setIsSegmentPlaying(false);
                 setVideoReveal(true);
                 setInteractionStep("ended");
               }}
@@ -742,48 +793,116 @@ export default function Home() {
 
             {!videoReveal && (
               <div
-                className={`interaction-layer step-${interactionStep}`}
+                className={`interaction-layer step-${interactionStep} ${
+                  isSegmentPlaying ? "is-playing" : ""
+                }`}
+                style={
+                  {
+                    "--gesture-progress": interactionProgress,
+                  } as React.CSSProperties
+                }
                 onPointerDown={startGesture}
                 onPointerMove={moveGesture}
                 onPointerUp={endGesture}
                 onPointerCancel={endGesture}
               >
+                {interactionStep !== "falling" && (
+                  <div className="gesture-feedback" aria-hidden="true">
+                    <span className="gesture-path" />
+                    <i className="gesture-follower">
+                      {interactionStep === "plane"
+                        ? "→"
+                        : interactionStep === "zoom"
+                          ? "↗"
+                          : "↓"}
+                    </i>
+                  </div>
+                )}
+
                 {interactionStep !== "falling" ? (
-                  <div className="gesture-cue">
-                    <span className="gesture-number">
-                      {interactionStep === "plane" ? "01" : interactionStep === "zoom" ? "02" : "03"}
+                  <div
+                    className={`gesture-cue ${isSegmentPlaying ? "is-playing" : ""}`}
+                    aria-live="polite"
+                  >
+                    <span className="gesture-live-icon">
+                      <i aria-hidden="true">
+                        {isSegmentPlaying
+                          ? "●"
+                          : interactionStep === "plane"
+                            ? "→"
+                            : interactionStep === "zoom"
+                              ? "↗"
+                              : "↓"}
+                      </i>
                     </span>
                     <div className="gesture-copy">
+                      <span className="gesture-kicker">
+                        {isSegmentPlaying
+                          ? "动画进行中"
+                          : `互动 ${
+                              interactionStep === "plane"
+                                ? "1"
+                                : interactionStep === "zoom"
+                                  ? "2"
+                                  : "3"
+                            } / 3`}
+                      </span>
                       <strong>
-                        {interactionStep === "plane" && "把“丝绸号”拉出云端"}
-                        {interactionStep === "zoom" && "拉近镜头，看看机腹下"}
-                        {interactionStep === "bean" && "这颗豆不想掉——把它往下拽"}
+                        {interactionStep === "plane" &&
+                          (isSegmentPlaying
+                            ? "“丝绸号”正在穿过云层…"
+                            : "把“丝绸号”拉出云端")}
+                        {interactionStep === "zoom" &&
+                          (isSegmentPlaying
+                            ? "镜头正在靠近机腹…"
+                            : "拉近镜头，看看机腹下")}
+                        {interactionStep === "bean" &&
+                          "这颗豆不想掉——把它往下拽"}
                       </strong>
                       <small>
-                        {interactionStep === "plane" && "按住画面，向右拖动"}
-                        {interactionStep === "zoom" && "按住画面，向右或向上拖动放大"}
-                        {interactionStep === "bean" && "按住画面，向下拖动"}
+                        {isSegmentPlaying && "已经感受到你的手势，画面会连续播放"}
+                        {!isSegmentPlaying &&
+                          interactionStep === "plane" &&
+                          "轻轻向右一划，动画就会自己继续"}
+                        {!isSegmentPlaying &&
+                          interactionStep === "zoom" &&
+                          "向右或向上一划，让镜头自动靠近"}
+                        {!isSegmentPlaying &&
+                          interactionStep === "bean" &&
+                          "向下一划，看它一路掉进云南"}
                       </small>
                     </div>
                     <div className="gesture-meter" aria-hidden="true">
-                      <span style={{ width: `${interactionProgress * 100}%` }} />
+                      <span
+                        style={{
+                          width: `${
+                            (isSegmentPlaying ? segmentProgress : interactionProgress) *
+                            100
+                          }%`,
+                        }}
+                      />
                     </div>
-                    <button
-                      type="button"
-                      className="gesture-assist"
-                      onPointerDown={(event) => event.stopPropagation()}
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        finishGestureStep();
-                      }}
-                    >
-                      点按完成这一步
-                    </button>
+                    {!isSegmentPlaying && (
+                      <button
+                        type="button"
+                        className="gesture-assist"
+                        onPointerDown={(event) => event.stopPropagation()}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          playGestureSegment();
+                        }}
+                      >
+                        轻触也可以
+                      </button>
+                    )}
                   </div>
                 ) : (
                   <div className="falling-cue" aria-live="polite">
                     <span className="falling-dot" />
-                    <strong>松手——让它降落云南</strong>
+                    <span>
+                      <small>连续动画播放中</small>
+                      <strong>松手——它掉下去了</strong>
+                    </span>
                   </div>
                 )}
 
@@ -859,8 +978,24 @@ export default function Home() {
                     <small> / {questions.length}</small>
                   </strong>
                 </div>
-                <div className="progress-track" aria-label={`已完成 ${answers.length} 题`}>
-                  <span style={{ width: `${(answers.length / questions.length) * 100}%` }} />
+                <div
+                  className="progress-track"
+                  aria-label={`已完成 ${answers.length} 题`}
+                  style={
+                    {
+                      "--bean-progress": `${
+                        (answers.length / questions.length) * 100
+                      }%`,
+                    } as React.CSSProperties
+                  }
+                >
+                  <span
+                    className="progress-fill"
+                    style={{ width: `${(answers.length / questions.length) * 100}%` }}
+                  />
+                  <span className="progress-runner" aria-hidden="true">
+                    <span className="runner-bean" />
+                  </span>
                 </div>
                 <span className="progress-percent">
                   {Math.round((answers.length / questions.length) * 100)}%

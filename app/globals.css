@@ -213,6 +213,7 @@ button {
 }
 
 .interaction-layer {
+  --gesture-progress: 0;
   position: absolute;
   inset: 0;
   z-index: 8;
@@ -231,21 +232,141 @@ button {
   pointer-events: none;
 }
 
-.gesture-cue {
-  width: min(760px, 100%);
-  min-height: 112px;
-  padding: 17px 18px 17px 20px;
-  border: 1px solid rgba(255, 255, 255, 0.36);
-  border-radius: 25px;
-  color: #fff;
-  background: rgba(39, 27, 19, 0.58);
-  box-shadow: 0 24px 60px rgba(38, 21, 12, 0.24);
-  backdrop-filter: blur(18px) saturate(1.1);
+.interaction-layer.is-playing {
+  cursor: default;
+}
+
+.gesture-feedback {
+  position: absolute;
+  left: 50%;
+  top: 47%;
+  width: 156px;
+  height: 70px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: calc(0.38 + var(--gesture-progress) * 0.62);
+  transition: opacity 0.16s ease;
+}
+
+.gesture-path {
+  position: absolute;
+  left: 19px;
+  right: 19px;
+  top: 50%;
+  height: 2px;
+  border-radius: 99px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.2),
+    rgba(255, 244, 210, 0.92)
+  );
+  box-shadow: 0 0 18px rgba(255, 232, 177, 0.3);
+}
+
+.gesture-path::after {
+  content: "";
+  position: absolute;
+  top: -3px;
+  right: -1px;
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid #fff4d2;
+  border-right: 2px solid #fff4d2;
+  transform: rotate(45deg);
+}
+
+.gesture-follower {
+  position: absolute;
+  left: 7px;
+  top: calc(50% - 21px);
+  width: 42px;
+  height: 42px;
   display: grid;
-  grid-template-columns: 58px minmax(0, 1fr) 150px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  color: #4b2b1d;
+  background: rgba(255, 241, 199, 0.93);
+  box-shadow:
+    0 9px 30px rgba(45, 27, 18, 0.22),
+    0 0 0 8px rgba(255, 255, 255, 0.08);
+  font-size: 19px;
+  font-style: normal;
+  transform: translateX(calc(var(--gesture-progress) * 96px));
+  transition: transform 0.025s linear;
+}
+
+.step-zoom .gesture-feedback {
+  transform: translate(-50%, -50%) rotate(-35deg);
+}
+
+.step-zoom .gesture-follower {
+  transform:
+    translateX(calc(var(--gesture-progress) * 96px))
+    rotate(35deg);
+}
+
+.step-bean .gesture-feedback {
+  width: 70px;
+  height: 156px;
+}
+
+.step-bean .gesture-path {
+  left: 50%;
+  right: auto;
+  top: 19px;
+  bottom: 19px;
+  width: 2px;
+  height: auto;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.2),
+    rgba(255, 244, 210, 0.92)
+  );
+}
+
+.step-bean .gesture-path::after {
+  top: auto;
+  right: -3px;
+  bottom: -1px;
+  transform: rotate(135deg);
+}
+
+.step-bean .gesture-follower {
+  left: calc(50% - 21px);
+  top: 7px;
+  transform: translateY(calc(var(--gesture-progress) * 96px));
+}
+
+.interaction-layer.is-playing .gesture-feedback {
+  opacity: 0;
+}
+
+.gesture-cue {
+  position: relative;
+  width: min(640px, calc(100% - 28px));
+  min-height: 86px;
+  padding: 14px 15px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.36);
+  border-radius: 22px;
+  color: #fff;
+  background: rgba(39, 27, 19, 0.52);
+  box-shadow: 0 20px 54px rgba(38, 21, 12, 0.2);
+  backdrop-filter: blur(20px) saturate(1.1);
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
   align-items: center;
-  gap: 16px;
+  gap: 13px;
   animation: cue-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition:
+    width 0.35s ease,
+    background 0.35s ease;
+}
+
+.gesture-cue.is-playing {
+  width: min(560px, calc(100% - 28px));
+  grid-template-columns: 44px minmax(0, 1fr);
+  background: rgba(33, 24, 18, 0.44);
 }
 
 @keyframes cue-in {
@@ -255,16 +376,33 @@ button {
   }
 }
 
-.gesture-number {
-  width: 52px;
-  height: 52px;
+.gesture-live-icon {
+  width: 40px;
+  height: 40px;
   display: grid;
   place-items: center;
   border-radius: 50%;
   color: #4a281a;
-  background: var(--sun);
+  background: linear-gradient(145deg, #ffd27a, #f0a841);
+  box-shadow: 0 8px 20px rgba(41, 24, 14, 0.2);
   font-weight: 800;
-  letter-spacing: 0.06em;
+}
+
+.gesture-live-icon i {
+  font-size: 17px;
+  font-style: normal;
+}
+
+.gesture-cue.is-playing .gesture-live-icon i {
+  color: #fff1c7;
+  animation: live-pulse 1s ease-in-out infinite;
+}
+
+@keyframes live-pulse {
+  50% {
+    opacity: 0.35;
+    transform: scale(0.72);
+  }
 }
 
 .gesture-copy {
@@ -274,9 +412,17 @@ button {
   gap: 5px;
 }
 
+.gesture-kicker {
+  color: #ffd27a;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
 .gesture-copy strong {
   font-family: "Noto Serif SC", serif;
-  font-size: clamp(16px, 1.4vw, 21px);
+  font-size: clamp(15px, 1.2vw, 19px);
   font-weight: 700;
 }
 
@@ -287,13 +433,17 @@ button {
 
 .gesture-meter {
   position: absolute;
-  left: 88px;
-  right: 190px;
-  bottom: 15px;
-  height: 3px;
+  left: 72px;
+  right: 146px;
+  bottom: 9px;
+  height: 2px;
   overflow: hidden;
   border-radius: 99px;
   background: rgba(255, 255, 255, 0.18);
+}
+
+.gesture-cue.is-playing .gesture-meter {
+  right: 15px;
 }
 
 .gesture-meter span {
@@ -302,12 +452,12 @@ button {
   height: 100%;
   border-radius: inherit;
   background: linear-gradient(90deg, #f5ad48, #fff1b5);
-  transition: width 0.04s linear;
+  transition: width 0.08s linear;
 }
 
 .gesture-assist {
-  min-height: 44px;
-  padding: 0 16px;
+  min-height: 38px;
+  padding: 0 14px;
   border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 999px;
   color: #fff;
@@ -350,9 +500,9 @@ button {
 
 .falling-cue {
   margin-bottom: 16px;
-  padding: 12px 18px;
+  padding: 11px 19px 11px 13px;
   color: white;
-  background: rgba(43, 29, 20, 0.48);
+  background: rgba(43, 29, 20, 0.44);
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 999px;
   backdrop-filter: blur(12px);
@@ -360,6 +510,18 @@ button {
   align-items: center;
   gap: 10px;
   font-size: 13px;
+}
+
+.falling-cue > span:last-child {
+  display: grid;
+  gap: 2px;
+}
+
+.falling-cue small {
+  color: #ffd27a;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
 }
 
 .falling-dot {
@@ -662,7 +824,8 @@ button {
   grid-template-columns: 185px 1fr 58px;
   align-items: center;
   gap: 24px;
-  margin: 3px 0 19px;
+  margin: 0 0 19px;
+  padding-top: 30px;
 }
 
 .progress-row > div:first-child {
@@ -693,18 +856,78 @@ button {
 }
 
 .progress-track {
+  position: relative;
   height: 6px;
-  overflow: hidden;
   border-radius: 99px;
   background: rgba(112, 79, 58, 0.13);
 }
 
-.progress-track span {
+.progress-fill {
   display: block;
   height: 100%;
   border-radius: inherit;
   background: linear-gradient(90deg, var(--caramel), var(--sun));
   transition: width 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.progress-runner {
+  position: absolute;
+  z-index: 2;
+  left: clamp(23px, var(--bean-progress), calc(100% - 23px));
+  bottom: 2px;
+  width: 50px;
+  height: 61px;
+  pointer-events: none;
+  transform: translateX(-50%);
+  transition: left 0.52s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.progress-runner::after {
+  content: "";
+  position: absolute;
+  left: 11px;
+  right: 11px;
+  bottom: -2px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(85, 47, 25, 0.18);
+  filter: blur(3px);
+  animation: runner-shadow 0.48s ease-in-out infinite;
+}
+
+.runner-bean {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: url("/images/ordinary-bean.png") center / contain no-repeat;
+  filter: drop-shadow(0 5px 5px rgba(87, 48, 24, 0.2));
+  transform-origin: 50% 88%;
+  animation: bean-run 0.48s ease-in-out infinite;
+}
+
+@keyframes bean-run {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  25% {
+    transform: translateY(-5px) rotate(2deg);
+  }
+  50% {
+    transform: translateY(-1px) rotate(3deg);
+  }
+  75% {
+    transform: translateY(-5px) rotate(-2deg);
+  }
+}
+
+@keyframes runner-shadow {
+  50% {
+    opacity: 0.55;
+    transform: scaleX(0.72);
+  }
 }
 
 .progress-percent {
@@ -1498,24 +1721,18 @@ footer {
   }
 
   .gesture-cue {
-    grid-template-columns: 48px 1fr;
+    grid-template-columns: 40px minmax(0, 1fr) auto;
     padding: 14px;
   }
 
-  .gesture-number {
-    width: 44px;
-    height: 44px;
-  }
-
   .gesture-assist {
-    grid-column: 1 / -1;
     min-height: 38px;
   }
 
   .gesture-meter {
-    left: 75px;
-    right: 18px;
-    bottom: 54px;
+    left: 67px;
+    right: 130px;
+    bottom: 8px;
   }
 
   .chapter-dots {
@@ -1549,6 +1766,7 @@ footer {
     grid-template-columns: 95px 1fr 43px;
     gap: 11px;
     margin-bottom: 14px;
+    padding-top: 27px;
   }
 
   .progress-label {
@@ -1745,6 +1963,26 @@ footer {
 
   .progress-row {
     margin: 0 0 10px;
+    padding-top: 28px;
+  }
+
+  .progress-runner {
+    left: clamp(18px, var(--bean-progress), calc(100% - 18px));
+    width: 40px;
+    height: 49px;
+  }
+
+  .gesture-cue {
+    grid-template-columns: 38px minmax(0, 1fr);
+  }
+
+  .gesture-assist {
+    grid-column: 1 / -1;
+  }
+
+  .gesture-meter {
+    left: 64px;
+    right: 14px;
   }
 
   .question-heading {
