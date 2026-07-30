@@ -122,6 +122,20 @@ button {
     scale(calc(1 + var(--gesture-progress) * 0.018));
 }
 
+.segment-preloads {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.segment-preloads video {
+  width: 1px;
+  height: 1px;
+}
+
 .intro-wash {
   position: absolute;
   inset: 0;

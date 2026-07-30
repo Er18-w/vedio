@@ -808,6 +808,10 @@ export default function Home() {
                 setInteractionStep("ended");
               }}
             />
+            <div className="segment-preloads" aria-hidden="true">
+              <video src="/media/cbti-zoom.mp4" muted playsInline preload="auto" />
+              <video src="/media/cbti-drop.mp4" muted playsInline preload="auto" />
+            </div>
             <div className="intro-wash" aria-hidden="true" />
 
             <header className="intro-topbar">
