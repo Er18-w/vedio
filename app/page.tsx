@@ -51,6 +51,8 @@ const profiles: Record<
     quote: string;
     coffee: string;
     drink: string;
+    whySummary: string;
+    whyCoffee: string[];
     color: string;
   }
 > = {
@@ -68,6 +70,11 @@ const profiles: Record<
     quote: "事情可以乱，但不能乱到最后还得我返工。",
     coffee: "干净、平衡、轮廓清楚，像柑橘、坚果、可可或焦糖。",
     drink: "清晰的手冲或美式",
+    whySummary: "务实的卡蒂姆遇上清晰利落的水洗，像你总能把混乱整理成可以执行的办法。",
+    whyCoffee: [
+      "在这套设定里，卡蒂姆给你的是务实、适应和“先活下来再说”的底色。环境未必温柔，但你很会在现有条件里找到可执行的办法。",
+      "水洗处理会去除果皮与大部分果胶，再经历发酵、清洗和干燥。人格隐喻是：生活把杂乱一层层冲走，最后留下清楚、直接、能把事情说明白的你。",
+    ],
     color: "#51745b",
   },
   LOL: {
@@ -84,6 +91,11 @@ const profiles: Record<
     quote: "来都来了，别让这场灾难完全白来。",
     coffee: "成熟果香、果干、莓果或发酵甜感，口感饱满。",
     drink: "日晒感明显的手冲或冷萃",
+    whySummary: "卡蒂姆的适应力遇上完整日晒，像你总能把经历发酵成好笑又有用的故事。",
+    whyCoffee: [
+      "你和稳豆共享卡蒂姆的适应力，但你走的是日晒路线。整颗果实带着果肉一起接受阳光和时间，经历没有立刻被拆开，而是完整参与最后的形成。",
+      "所以发生在你身上的事，很容易在心里继续发酵。放着放着，它可能从一次灾难变成一个很好笑的故事。你的乐观不是没被打过，是打击最后在你这里被做成了段子。",
+    ],
     color: "#e19b45",
   },
   OKOK: {
@@ -100,6 +112,11 @@ const profiles: Record<
     quote: "可以都理解，但不代表最后都得听。",
     coffee: "焦糖、蜂蜜、果干和圆润甜感，清晰与饱满居中。",
     drink: "甜感清楚的手冲或温和奶咖",
+    whySummary: "卡蒂姆的务实遇上蜜处理恰到好处的保留，像你温和协调，却从不丢掉边界。",
+    whyCoffee: [
+      "卡蒂姆给你现实和适应力，蜜处理则保留部分果胶进行干燥。它不像水洗那样清得很彻底，也不像整果日晒那样全部留下。",
+      "这正像你的处事方式：有些东西要放下，有些情绪值得保留，但什么都背着迟早腰疼。你不是和稀泥，你只是知道很多关系不能拿高压水枪处理。",
+    ],
     color: "#c9896b",
   },
   WHY: {
@@ -116,6 +133,11 @@ const profiles: Record<
     quote: "我可以先照做，但你最好祈祷我没发现更好的办法。",
     coffee: "热带水果、酒香、香料或更强烈的发酵感。",
     drink: "小杯量直接品鉴",
+    whySummary: "务实卡蒂姆遇上厌氧日晒的内部运算，像你总能在压力里质疑旧规则、更新系统。",
+    whyCoffee: [
+      "你依然拥有卡蒂姆务实、能落地的底色，所以不是只会喊口号的叛逆者。你的反骨通常带着执行方案。",
+      "厌氧日晒把咖啡放进氧气受控的环境中发酵，再完成干燥。人格隐喻是：生活把你关进压力锅，不让你对外发疯，只允许你在内部持续运算。普通人受压后可能更老实，你受压后容易更新系统。",
+    ],
     color: "#674f7a",
   },
   LOAD: {
@@ -132,6 +154,11 @@ const profiles: Record<
     quote: "我不是不想熟，我只是想确认熟了以后不会后悔。",
     coffee: "干净、细致，带柑橘、白花、茶感与轻柔甜感。",
     drink: "安静喝的浅烘手冲",
+    whySummary: "经典细腻的铁皮卡配合水洗筛选，像你慢慢确认，只把真正可靠的人和事留下。",
+    whyCoffee: [
+      "在项目设定中，铁皮卡代表经典、细腻与对环境和品质的要求。它不是追求快速大量的路线，更像宁愿慢一点，也不把自己长得太随便。",
+      "水洗进一步强化了清理和确认：什么值得留下，什么只是杂味。于是你表达前常做内部审核，一句话可能在草稿箱里活了两天。",
+    ],
     color: "#6d8490",
   },
   IMOK: {
@@ -148,6 +175,11 @@ const profiles: Record<
     quote: "我可以先认真，但绝不能先被发现。",
     coffee: "果干、核果、成熟甜感与饱满口感。",
     drink: "温度逐渐下降的慢饮",
+    whySummary: "细腻铁皮卡经整果日晒慢慢积累，像你把浓烈感受留在内部，等很久才表达。",
+    whyCoffee: [
+      "铁皮卡让你慢熟、细腻、标准高；日晒则让完整果实陪伴种子一起变化。经历没有迅速被剥离，而是在内部继续积累。",
+      "换成人类来说，生活没有及时替你处理情绪，只把你放在太阳下让你自己慢慢想。你想得越久，内部信息越丰富；别人来问时，你只剩一句：“都过去了。”确实过去了，只是每天晚上还会路过一下。",
+    ],
     color: "#556171",
   },
   IDOL: {
@@ -164,6 +196,11 @@ const profiles: Record<
     quote: "别人爱不爱我不稳定，我这里必须保持长期供应。",
     coffee: "茉莉、柑橘、佛手柑、茶感与清晰酸质。",
     drink: "高香气、清晰度好的浅烘手冲",
+    whySummary: "敏感细致的瑰夏经水洗去除杂音，像你最终仍选择站在自己的价值与边界这边。",
+    whyCoffee: [
+      "瑰夏常被理解为敏感、细致、对环境要求高的品种。人格隐喻是：好的成长不靠长期打压，适合自己的环境真的很重要。",
+      "水洗像把外界期待、比较和杂音反复冲走。你的强大不是从未自我怀疑，而是各种声音洗过几轮以后，你仍然决定：“行吧，我依然站我自己这边。”",
+    ],
     color: "#c88096",
   },
   YOLO: {
@@ -180,6 +217,11 @@ const profiles: Record<
     quote: "钱可以再赚，今天的晚霞不负责补拍。",
     coffee: "浓郁花香、莓果、热带水果和果汁感。",
     drink: "香气开放的手冲或冰手冲",
+    whySummary: "敏感瑰夏遇上整果日晒，像你愿意完整收藏每一次不可复制的体验。",
+    whyCoffee: [
+      "你和爱豆共享瑰夏的敏感与细致，但你经历的是整果日晒。果实和种子一起接受阳光与时间，经历被完整保留。",
+      "爱豆会问一件事是否有长期价值，你更常问：“这个感觉以后还能不能再遇到？”你的感性不是缺陷，只是它每次拥有表决权时，理性都得在旁边等它发言完。",
+    ],
     color: "#df755e",
   },
   HUGS: {
@@ -196,6 +238,11 @@ const profiles: Record<
     quote: "我愿意理解你，但你最好不要利用我的理解。",
     coffee: "柑橘、红糖、可可与圆润甜感，温和而有结构。",
     drink: "温暖平衡的手冲或舒服奶咖",
+    whySummary: "温和、重关系的波旁经水洗厘清边界，像你的温柔有分寸，也有开关。",
+    whyCoffee: [
+      "波旁在项目中代表温和、重品质、重关系深度的底色。认识很多人不是重点，认真建立的关系才有质量。",
+      "水洗像生活教你把关心和牺牲分开，把温柔和讨好分开，把“我愿意帮你”和“你可以无限使用我”分开。你的暖，不该没有开关。",
+    ],
     color: "#b77d59",
   },
   SUGR: {
@@ -212,6 +259,11 @@ const profiles: Record<
     quote: "今天不一定顺利，但不能一点甜头都不给我。",
     coffee: "黄色水果、蜂蜜、焦糖与成熟甜感。",
     drink: "甜感突出的手冲或冰咖啡",
+    whySummary: "甜感底色的黄波旁经日晒放大果香，像你把不甜的经历晒成可以分享的快乐。",
+    whyCoffee: [
+      "黄波旁为你提供温和与甜感的叙事底色，日晒让完整果实参与形成，使果香、甜感和饱满度更有存在感。",
+      "换成人类来说，你并非在完全无忧的环境中长大，只是把很多不甜的经历慢慢晒成了自己能接受的味道。你分享快乐，是因为知道有甜的时候不赶紧吃，实在太亏。",
+    ],
     color: "#e4a63c",
   },
   RETRY: {
@@ -228,6 +280,11 @@ const profiles: Record<
     quote: "可以暂时打不过，但不能连技能说明都不看。",
     coffee: "明亮柑橘、红色水果、干净甜感和清楚结构。",
     drink: "清晰明亮的手冲",
+    whySummary: "兼顾抗性与表现力的巴天经水洗提炼，像你从失败里留下下一轮真正能用的经验。",
+    whyCoffee: [
+      "巴天是兼顾抗性、产量与杯质潜力的复合品种。在这套人格隐喻中，它不满足于只活下来，还希望在活下来的同时继续保留表现力。",
+      "水洗让你的战斗方式更像复盘而不是乱冲：把情绪洗掉一点，把失败拆开一点，把真正能用于下一轮的经验留下。",
+    ],
     color: "#a94f3f",
   },
   SOLO: {
@@ -244,6 +301,11 @@ const profiles: Record<
     quote: "我不必证明自己特殊，但我必须像我自己。",
     coffee: "白花、柑橘、葡萄柚、甘蔗甜与茶感。",
     drink: "细致的浅烘手冲",
+    whySummary: "云南本土识别度的德热296与多段水洗，像你反复确认后仍拒绝默认设置。",
+    whyCoffee: [
+      "德热296为这张人格卡提供云南本土选育与紫叶类型的识别度。市场上常见“紫叶卡杜拉”等称呼，但实际对外应以庄园和批次溯源为准。",
+      "K72通常指累计约72小时的多段发酵与复洗思路。人格隐喻是：生活觉得你第一次复盘还不够彻底，又把你按回去问：“你真正想要的到底是什么？”反复确认以后，你依然拒绝使用默认设置。",
+    ],
     color: "#4d7476",
   },
 };
@@ -1208,6 +1270,7 @@ function Result({
 }) {
   const p = profiles[primary];
   const sProfile = profiles[secondary];
+  const [coffeeExpanded, setCoffeeExpanded] = useState(false);
   const sameFamily = families.some(
     (family) => family.includes(primary) && family.includes(secondary),
   );
@@ -1263,15 +1326,45 @@ function Result({
         </div>
       </section>
 
-      <section className="coffee-card">
-        <div>
+      <section
+        className={`coffee-card ${coffeeExpanded ? "is-expanded" : ""}`}
+        style={{ "--result-color": p.color } as React.CSSProperties}
+      >
+        <div className="coffee-summary">
           <p className="section-label">为什么是这颗云南豆</p>
           <h3>{p.archetype}</h3>
-          <p>杯中方向偏{p.coffee}最终风味以实际批次杯测为准。</p>
+          <p>{p.whySummary}</p>
+          <button
+            type="button"
+            className="coffee-toggle"
+            aria-expanded={coffeeExpanded}
+            aria-controls="coffee-match-details"
+            onClick={() => setCoffeeExpanded((expanded) => !expanded)}
+          >
+            <span>{coffeeExpanded ? "收起完整解释" : "展开完整解释"}</span>
+            <i aria-hidden="true">{coffeeExpanded ? "−" : "+"}</i>
+          </button>
         </div>
         <div className="drink-box">
           <span>建议喝法</span>
           <strong>{p.drink}</strong>
+        </div>
+        <div
+          className="coffee-details"
+          id="coffee-match-details"
+          aria-hidden={!coffeeExpanded}
+        >
+          <div className="coffee-details-inner">
+            <div className="why-copy">
+              <p className="section-label">完整匹配解释</p>
+              {p.whyCoffee.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+            </div>
+            <div className="cup-profile">
+              <span>杯中方向</span>
+              <p>{p.coffee}</p>
+              <small>最终风味以实际批次杯测为准。</small>
+            </div>
+          </div>
         </div>
       </section>
 
