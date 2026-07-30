@@ -739,8 +739,9 @@ export default function Home() {
               preload="auto"
               onLoadedMetadata={(event) => {
                 event.currentTarget.muted = muted;
-                event.currentTarget.pause();
-                event.currentTarget.currentTime = 0;
+                if (interactionStep === "plane" && !isSegmentPlaying) {
+                  event.currentTarget.pause();
+                }
               }}
               onTimeUpdate={(event) => {
                 const video = event.currentTarget;
