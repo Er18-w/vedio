@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import ClickSpark from "./components/ClickSpark";
 
 type BeanCode =
   | "HOLD"
@@ -458,11 +459,28 @@ function BeanCharacter({ code, small = false }: { code: BeanCode; small?: boolea
   );
 }
 
+type InteractionStep = "plane" | "zoom" | "bean" | "falling" | "ended";
+
 export default function Home() {
-  const quizRef = useRef<HTMLElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const gestureRef = useRef<{
+    pointerId: number;
+    startX: number;
+    startY: number;
+    startProgress: number;
+  } | null>(null);
+  const endingTimerRef = useRef<number | null>(null);
   const [answers, setAnswers] = useState<number[]>([]);
   const [submitted, setSubmitted] = useState(false);
   const [tieChoice, setTieChoice] = useState<BeanCode | null>(null);
+  const [entered, setEntered] = useState(false);
+  const [videoReveal, setVideoReveal] = useState(false);
+  const [muted, setMuted] = useState(true);
+  const [transitioning, setTransitioning] = useState(false);
+  const [selectedOption, setSelectedOption] = useState<number | null>(null);
+  const [interactionStep, setInteractionStep] =
+    useState<InteractionStep>("plane");
+  const [interactionProgress, setInteractionProgress] = useState(0);
 
   const ranking = useMemo(() => {
     const raw = Object.fromEntries(
@@ -498,90 +516,344 @@ export default function Home() {
       ? topTwo.find((item) => item.code !== tieChoice)?.code
       : topTwo[1]?.code;
 
-  const scrollToQuiz = () => quizRef.current?.scrollIntoView({ behavior: "smooth" });
+  const choose = useCallback((optionIndex: number) => {
+    if (transitioning || answers.length >= questions.length) return;
+    setSelectedOption(optionIndex);
+    setTransitioning(true);
+    window.setTimeout(() => {
+      setAnswers((current) => [...current, optionIndex]);
+      setSelectedOption(null);
+      setTransitioning(false);
+    }, 360);
+  }, [answers.length, transitioning]);
 
-  const choose = (optionIndex: number) => {
-    setAnswers((current) => [...current, optionIndex]);
-    window.setTimeout(() => quizRef.current?.scrollIntoView({ behavior: "smooth" }), 80);
-  };
-
-  const goBack = () => {
+  const goBack = useCallback(() => {
+    if (transitioning) return;
     setAnswers((current) => current.slice(0, -1));
     setSubmitted(false);
     setTieChoice(null);
-  };
+  }, [transitioning]);
 
   const restart = () => {
     setAnswers([]);
     setSubmitted(false);
     setTieChoice(null);
-    window.setTimeout(scrollToQuiz, 50);
+    setSelectedOption(null);
+    setTransitioning(false);
   };
 
+  const enterQuiz = () => {
+    videoRef.current?.pause();
+    if (endingTimerRef.current !== null) {
+      window.clearTimeout(endingTimerRef.current);
+    }
+    setEntered(true);
+  };
+
+  const seekVideo = (time: number) => {
+    const video = videoRef.current;
+    if (!video || !Number.isFinite(video.duration)) return;
+    video.currentTime = Math.min(video.duration, Math.max(0, time));
+  };
+
+  const finishGestureStep = (step = interactionStep) => {
+    const video = videoRef.current;
+    setInteractionProgress(0);
+    gestureRef.current = null;
+
+    if (step === "plane") {
+      seekVideo(6.5);
+      setInteractionStep("zoom");
+      return;
+    }
+    if (step === "zoom") {
+      seekVideo(9);
+      setInteractionStep("bean");
+      return;
+    }
+    if (step === "bean") {
+      seekVideo(11.7);
+      setInteractionStep("falling");
+      window.setTimeout(() => video?.play().catch(() => undefined), 60);
+      endingTimerRef.current = window.setTimeout(() => {
+        setVideoReveal(true);
+        setInteractionStep("ended");
+      }, 6400);
+    }
+  };
+
+  const startGesture = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!["plane", "zoom", "bean"].includes(interactionStep)) return;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    gestureRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      startProgress: interactionProgress,
+    };
+  };
+
+  const moveGesture = (event: React.PointerEvent<HTMLDivElement>) => {
+    const gesture = gestureRef.current;
+    if (!gesture || gesture.pointerId !== event.pointerId) return;
+
+    const dx = event.clientX - gesture.startX;
+    const dy = event.clientY - gesture.startY;
+    const distance =
+      interactionStep === "plane"
+        ? dx / 270
+        : interactionStep === "zoom"
+          ? Math.max(dx / 200, -dy / 200)
+          : dy / 220;
+    const progress = Math.min(1, Math.max(0, gesture.startProgress + distance));
+    setInteractionProgress(progress);
+
+    if (interactionStep === "plane") seekVideo(progress * 6.5);
+    if (interactionStep === "zoom") seekVideo(6.5 + progress * 2.5);
+    if (interactionStep === "bean") seekVideo(9 + progress * 2.7);
+
+    if (progress >= 0.98) {
+      finishGestureStep(interactionStep);
+    }
+  };
+
+  const endGesture = (event: React.PointerEvent<HTMLDivElement>) => {
+    const gesture = gestureRef.current;
+    if (!gesture || gesture.pointerId !== event.pointerId) return;
+    gestureRef.current = null;
+  };
+
+  const skipVideo = () => {
+    const video = videoRef.current;
+    if (endingTimerRef.current !== null) {
+      window.clearTimeout(endingTimerRef.current);
+    }
+    setVideoReveal(true);
+    setInteractionStep("ended");
+    setInteractionProgress(0);
+    if (!video) return;
+    if (Number.isFinite(video.duration)) {
+      video.currentTime = Math.max(0, video.duration - 1.25);
+    }
+    video.pause();
+  };
+
+  const toggleSound = async () => {
+    const video = videoRef.current;
+    if (!video) return;
+    const nextMuted = !muted;
+    video.muted = nextMuted;
+    setMuted(nextMuted);
+    if (!nextMuted && interactionStep === "falling") {
+      await video.play().catch(() => undefined);
+    }
+  };
+
+  useEffect(() => {
+    const isResult =
+      entered && submitted && (!needsTieBreak || tieChoice !== null);
+    document.body.classList.toggle("experience-locked", !isResult);
+    return () => document.body.classList.remove("experience-locked");
+  }, [entered, needsTieBreak, submitted, tieChoice]);
+
+  useEffect(() => {
+    if (!entered || submitted || answers.length >= questions.length) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "ArrowLeft" && answers.length > 0) {
+        goBack();
+        return;
+      }
+      const index = ["1", "2", "3", "4"].indexOf(event.key);
+      if (index >= 0 && index < questions[answers.length].options.length) {
+        choose(index);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [answers.length, choose, entered, goBack, submitted]);
+
+  useEffect(
+    () => () => {
+      if (endingTimerRef.current !== null) {
+        window.clearTimeout(endingTimerRef.current);
+      }
+    },
+    [],
+  );
+
   return (
-    <main>
-      <section className="hero" id="home">
-        <nav className="nav shell">
-          <a href="#home" className="brand" aria-label="CBTI 人格测试首页">
-            <span className="brand-mark">C</span>
-            <span>CBTI 人格测试</span>
-          </a>
-          <button className="nav-cta" onClick={scrollToQuiz}>
-            开始测试
-          </button>
-        </nav>
+    <ClickSpark className="experience-root" color="#ffd27a" count={12} radius={32}>
+      <main className={entered ? "is-entered" : "is-intro"}>
+        {!entered && (
+          <section className={`cinematic-intro ${videoReveal ? "is-revealed" : ""}`} id="home">
+            <video
+              ref={videoRef}
+              className="intro-video"
+              src="/media/cbti-intro.mp4"
+              poster="/media/cbti-intro-poster.jpg"
+              muted={muted}
+              playsInline
+              preload="auto"
+              onLoadedMetadata={(event) => {
+                event.currentTarget.muted = muted;
+                event.currentTarget.pause();
+                event.currentTarget.currentTime = 0;
+              }}
+              onTimeUpdate={(event) => {
+                const video = event.currentTarget;
+                if (video.duration - video.currentTime <= 4.25) {
+                  setVideoReveal(true);
+                }
+              }}
+              onEnded={() => {
+                if (endingTimerRef.current !== null) {
+                  window.clearTimeout(endingTimerRef.current);
+                }
+                setVideoReveal(true);
+                setInteractionStep("ended");
+              }}
+              onError={() => {
+                setVideoReveal(true);
+                setInteractionStep("ended");
+              }}
+            />
+            <div className="intro-wash" aria-hidden="true" />
 
-        <div className="hero-grid shell">
-          <div className="hero-copy">
-            <p className="eyebrow">COFFEE BEAN TYPE INDICATOR</p>
-            <h1>
-              如果性格有风味，
-              <br />
-              <em>你会是哪颗云南豆？</em>
-            </h1>
-            <p className="hero-lead">
-              20 个生活现场，12 种咖啡豆人格。别想太久，第一反应通常更像你。
-            </p>
-            <button className="primary-button" onClick={scrollToQuiz}>
-              进入豆子世界 <span>↘</span>
-            </button>
-            <div className="hero-meta">
-              <span>约 3 分钟</span>
-              <span>20 道题</span>
-              <span>娱乐型人格体验</span>
+            <header className="intro-topbar">
+              <a className="intro-brand" href="#home" aria-label="CBTI 咖啡豆型人格测试首页">
+                <span className="brand-bean" aria-hidden="true" />
+                <span>
+                  <b>CBTI</b>
+                  <small>COFFEE BEAN TYPE INDICATOR</small>
+                </span>
+              </a>
+              <div className="intro-controls">
+                <button type="button" onClick={toggleSound}>
+                  <span aria-hidden="true">{muted ? "♪" : "◼"}</span>
+                  {muted ? "开启声音" : "静音"}
+                </button>
+                {!videoReveal && (
+                  <button type="button" onClick={skipVideo}>
+                    跳过动画
+                  </button>
+                )}
+              </div>
+            </header>
+
+            {!videoReveal && (
+              <div
+                className={`interaction-layer step-${interactionStep}`}
+                onPointerDown={startGesture}
+                onPointerMove={moveGesture}
+                onPointerUp={endGesture}
+                onPointerCancel={endGesture}
+              >
+                {interactionStep !== "falling" ? (
+                  <div className="gesture-cue">
+                    <span className="gesture-number">
+                      {interactionStep === "plane" ? "01" : interactionStep === "zoom" ? "02" : "03"}
+                    </span>
+                    <div className="gesture-copy">
+                      <strong>
+                        {interactionStep === "plane" && "把“丝绸号”拉出云端"}
+                        {interactionStep === "zoom" && "拉近镜头，看看机腹下"}
+                        {interactionStep === "bean" && "这颗豆不想掉——把它往下拽"}
+                      </strong>
+                      <small>
+                        {interactionStep === "plane" && "按住画面，向右拖动"}
+                        {interactionStep === "zoom" && "按住画面，向右或向上拖动放大"}
+                        {interactionStep === "bean" && "按住画面，向下拖动"}
+                      </small>
+                    </div>
+                    <div className="gesture-meter" aria-hidden="true">
+                      <span style={{ width: `${interactionProgress * 100}%` }} />
+                    </div>
+                    <button
+                      type="button"
+                      className="gesture-assist"
+                      onPointerDown={(event) => event.stopPropagation()}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        finishGestureStep();
+                      }}
+                    >
+                      点按完成这一步
+                    </button>
+                  </div>
+                ) : (
+                  <div className="falling-cue" aria-live="polite">
+                    <span className="falling-dot" />
+                    <strong>松手——让它降落云南</strong>
+                  </div>
+                )}
+
+                <div className="chapter-dots" aria-label="互动进度">
+                  {(["plane", "zoom", "bean"] as InteractionStep[]).map((step, index) => (
+                    <span
+                      key={step}
+                      className={
+                        step === interactionStep
+                          ? "is-current"
+                          : (interactionStep === "zoom" && index === 0) ||
+                              (interactionStep === "bean" && index < 2) ||
+                              ["falling", "ended"].includes(interactionStep)
+                            ? "is-done"
+                            : ""
+                      }
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="intro-copy" aria-live="polite">
+              <p className="intro-eyebrow">一颗云南豆的奇遇，从这里开始</p>
+              <h1>
+                <span>咖啡豆型</span>
+                <span className="title-accent">人格测试</span>
+              </h1>
+              <p className="intro-lead">
+                别急着定义自己。让 20 个生活瞬间，
+                <br />
+                替你冲出一杯真正的性格风味。
+              </p>
+              <button className="intro-cta magnetic-button" onClick={enterQuiz}>
+                <span>开始萃取我的豆格</span>
+                <i aria-hidden="true">→</i>
+              </button>
+              <div className="intro-meta">
+                <span>20 幕生活切片</span>
+                <span>12 种云南豆格</span>
+                <span>约 3 分钟</span>
+              </div>
             </div>
-          </div>
 
-          <div className="hero-stage" aria-label="咖啡豆角色占位插画">
-            <div className="sun-disc" />
-            <div className="steam steam-one" />
-            <div className="steam steam-two" />
-            <BeanCharacter code="SUGR" />
-            <div className="stage-card card-one">
-              <span>今日风味</span>
-              <strong>甜感 +++</strong>
+            <div className="playback-line" aria-hidden="true">
+              <span />
             </div>
-            <div className="stage-card card-two">
-              <span>云南限定</span>
-              <strong>12 种豆格</strong>
-            </div>
-            <p className="asset-note">角色形象待你的正式素材替换</p>
-          </div>
-        </div>
+          </section>
+        )}
 
-        <button className="scroll-cue" onClick={scrollToQuiz} aria-label="向下查看测试">
-          <span>往下滑，开始认识自己</span>
-          <i>↓</i>
-        </button>
-      </section>
-
-      <section className="quiz-section" ref={quizRef} id="quiz">
+        {entered && (
+          <section className={`quiz-section ${submitted ? "has-submission" : ""}`} id="quiz">
+            <div className="quiz-cloud cloud-one" aria-hidden="true" />
+            <div className="quiz-cloud cloud-two" aria-hidden="true" />
         <div className="quiz-shell">
+          <header className="quiz-topbar">
+            <button className="quiz-brand" onClick={restart} aria-label="重新开始测试">
+              <span className="brand-bean" aria-hidden="true" />
+              <span><b>CBTI</b><small>咖啡豆型人格测试</small></span>
+            </button>
+            {!submitted && (
+              <span className="quiz-hint">按数字键 1—4 选择 · ← 返回</span>
+            )}
+          </header>
+
           {!submitted && (
-            <>
+            <div className="quiz-viewport">
               <div className="progress-row">
                 <div>
-                  <span className="progress-label">豆格采样中</span>
+                  <span className="progress-label">正在采集你的风味</span>
                   <strong>
                     {Math.min(answers.length + 1, questions.length)}
                     <small> / {questions.length}</small>
@@ -596,12 +868,25 @@ export default function Home() {
               </div>
 
               {answers.length < questions.length ? (
-                <div className="question-card" key={answers.length}>
-                  <p className="question-kicker">SCENE {String(answers.length + 1).padStart(2, "0")}</p>
+                <div
+                  className={`question-card ${transitioning ? "page-leave" : "page-enter"}`}
+                  key={answers.length}
+                >
+                  <div className="question-heading">
+                    <p className="question-kicker">
+                      LIFE SCENE · {String(answers.length + 1).padStart(2, "0")}
+                    </p>
+                    <span className="scene-stamp">云南豆格采样</span>
+                  </div>
                   <h2>{questions[answers.length].scene}</h2>
                   <div className="options">
                     {questions[answers.length].options.map((option, optionIndex) => (
-                      <button key={option.text} onClick={() => choose(optionIndex)}>
+                      <button
+                        key={option.text}
+                        className={selectedOption === optionIndex ? "is-selected" : ""}
+                        disabled={transitioning}
+                        onClick={() => choose(optionIndex)}
+                      >
                         <span>{String.fromCharCode(65 + optionIndex)}</span>
                         <p>{option.text}</p>
                         <i>→</i>
@@ -610,7 +895,7 @@ export default function Home() {
                   </div>
                   {answers.length > 0 && (
                     <button className="back-button" onClick={goBack}>
-                      ← 返回上一题
+                      <span aria-hidden="true">←</span> 返回上一幕
                     </button>
                   )}
                 </div>
@@ -625,14 +910,14 @@ export default function Home() {
                   <h2>20 个选择，已经萃取完毕。</h2>
                   <p>接下来会校正每种人格的题目曝光差异，再生成你的主人格与副风味。</p>
                   <button className="primary-button" onClick={() => setSubmitted(true)}>
-                    提交并生成结果 <span>→</span>
+                    打开我的豆格报告 <span>→</span>
                   </button>
                   <button className="back-button" onClick={goBack}>
                     ← 修改最后一题
                   </button>
                 </div>
-              )}
-            </>
+                  )}
+            </div>
           )}
 
           {submitted && needsTieBreak && !tieChoice && (
@@ -667,16 +952,20 @@ export default function Home() {
             />
           )}
         </div>
-      </section>
+          </section>
+        )}
 
-      <footer>
-        <div className="shell footer-inner">
-          <strong>CBTI 人格测试</strong>
-          <p>以云南咖啡为媒介的娱乐型人格体验，不属于心理学诊断。</p>
-          <span>© 2026 CBTI</span>
-        </div>
-      </footer>
-    </main>
+        {entered && submitted && (!needsTieBreak || tieChoice) && (
+          <footer>
+            <div className="shell footer-inner">
+              <strong>CBTI 咖啡豆型人格测试</strong>
+              <p>以云南咖啡为媒介的娱乐型人格体验，不属于心理学诊断。</p>
+              <span>© 2026 CBTI</span>
+            </div>
+          </footer>
+        )}
+      </main>
+    </ClickSpark>
   );
 }
 

@@ -23,20 +23,21 @@ async function render() {
   );
 }
 
-test("server-renders the CBTI landing page", async () => {
+test("server-renders the interactive CBTI opening", async () => {
   const response = await render();
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
 
   const html = await response.text();
-  assert.match(html, /<title>CBTI 人格测试｜你是哪颗云南咖啡豆？<\/title>/i);
-  assert.match(html, /CBTI 人格测试/);
-  assert.match(html, /如果性格有风味/);
-  assert.match(html, /20 道题/);
+  assert.match(html, /<title>CBTI 咖啡豆型人格测试｜你是哪颗云南豆？<\/title>/i);
+  assert.match(html, /咖啡豆型/);
+  assert.match(html, /人格测试/);
+  assert.match(html, /把“丝绸号”拉出云端/);
+  assert.match(html, /\/media\/cbti-intro\.mp4/);
   assert.doesNotMatch(html, /codex-preview|Your site is taking shape|SkeletonPreview/i);
 });
 
-test("keeps all questions and normalized scoring in source", async () => {
+test("keeps all questions, page-turn flow, and normalized scoring in source", async () => {
   const page = await readFile(
     new URL("../app/page.tsx", import.meta.url),
     "utf8",
@@ -48,5 +49,8 @@ test("keeps all questions and normalized scoring in source", async () => {
   assert.match(page, /OKOK:\s*17/);
   assert.match(page, /RETRY:\s*21/);
   assert.match(page, /topTwo\[0\]\.score - topTwo\[1\]\.score < 5/);
-  assert.match(page, /提交并生成结果/);
+  assert.match(page, /page-leave/);
+  assert.match(page, /这颗豆不想掉——把它往下拽/);
+  assert.match(page, /打开我的豆格报告/);
+  assert.doesNotMatch(page, /scrollIntoView/);
 });

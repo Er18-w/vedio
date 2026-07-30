@@ -2,12 +2,14 @@
 
 一个以云南咖啡豆为人格原型的互动测试网站。用户完成 20 道生活情境题后，系统会按照隐藏计分规则、人格曝光上限和决胜规则，生成主人格、副风味及对应的咖啡原型分析。
 
-线上基础版：[cbti-yunnan-bean-test.a-msalemariel1386.chatgpt.site](https://cbti-yunnan-bean-test.a-msalemariel1386.chatgpt.site)
+线上版本：[cbti-yunnan-bean-test.a-msalemariel1386.chatgpt.site](https://cbti-yunnan-bean-test.a-msalemariel1386.chatgpt.site)
 
 ## 已实现功能
 
-- CBTI 品牌首页与咖啡豆角色占位视觉
-- 20 道情境题逐题作答、进度显示及返回修改
+- 三段式互动开场：拖出飞机、放大寻找咖啡豆、向下拽豆触发坠落动画
+- 视频片尾自动揭幕“咖啡豆型人格测试”标题与开始按钮
+- 20 道情境题一题一屏翻页、进度显示及返回修改
+- 鼠标、触控手势、数字键选择和低动态偏好适配
 - 12 种咖啡豆人格隐藏计分
 - 按人格曝光上限换算标准分
 - 前两名相差不足 5 分时触发价值句决胜题
@@ -70,14 +72,18 @@ pnpm lint
 ```text
 .
 ├─ app/
-│  ├─ page.tsx          # 题目、计分、人格资料和页面交互
+│  ├─ components/       # ReactBits 动效改编组件
+│  ├─ page.tsx          # 互动开场、题目、计分和人格资料
 │  ├─ globals.css       # 全站视觉和响应式样式
 │  └─ layout.tsx        # 页面标题与基础布局
-├─ public/              # 静态图片、图标等素材
+├─ public/
+│  ├─ media/            # 网页压缩版开场视频与首帧
+│  └─ og.png            # 社交分享封面
 ├─ tests/               # 自动测试
 ├─ worker/              # Cloudflare Worker 入口
 ├─ build/               # Sites/Vite 构建支持
 ├─ .openai/             # 当前 Sites 项目配置
+├─ THIRD_PARTY_NOTICES.md
 ├─ package.json
 └─ pnpm-lock.yaml       # 固定依赖版本，请一并提交
 ```
