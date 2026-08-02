@@ -4407,7 +4407,7 @@ body[data-screen="home-screen"] .home-audio-toggle.is-on {
   place-items: center;
   isolation: isolate;
   color: #fffdf1;
-  background: #142112;
+  background: #142112 url("assets/home-hero-fallback.jpg") center / cover no-repeat;
 }
 
 .home-hero-video {
