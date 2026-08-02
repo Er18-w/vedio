@@ -697,7 +697,7 @@ function paintProgressRunner() {
   if (video.readyState >= 2) {
     const context = canvas.getContext("2d", { willReadFrequently: true });
     context.clearRect(0, 0, canvas.width, canvas.height);
-    context.drawImage(video, 310, 40, 390, 500, 0, 0, canvas.width, canvas.height);
+    context.drawImage(video, 880, 120, 800, 1200, 0, 0, canvas.width, canvas.height);
     const frame = context.getImageData(0, 0, canvas.width, canvas.height);
     for (let index = 0; index < frame.data.length; index += 4) {
       const light = Math.max(frame.data[index], frame.data[index + 1], frame.data[index + 2]);

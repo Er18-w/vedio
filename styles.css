@@ -911,10 +911,13 @@ a:focus-visible {
 
 .progress-track {
   position: relative;
-  height: 2px;
-  margin: 18px 25px 0;
+  height: 14px;
+  margin: 28px 34px 0;
   overflow: visible;
   background: var(--paper-deep);
+  border: 1px solid rgba(22, 48, 25, 0.12);
+  border-radius: 999px;
+  box-shadow: inset 0 1px 2px rgba(22, 48, 25, 0.1);
 }
 
 .progress-track div {
@@ -923,18 +926,20 @@ a:focus-visible {
   height: 100%;
   background: var(--orange);
   transition: width 0.35s ease;
+  border-radius: inherit;
+  box-shadow: 0 2px 8px rgba(230, 108, 46, 0.24);
 }
 
 .progress-runner {
   position: absolute;
   z-index: 2;
-  right: -25px;
+  right: -42px;
   top: 50%;
-  width: 48px;
-  height: 62px;
+  width: 84px;
+  height: 126px;
   overflow: hidden;
   pointer-events: none;
-  transform: translateY(-55%);
+  transform: translateY(-52%);
   filter: drop-shadow(0 7px 7px rgba(22, 48, 25, 0.26));
 }
 
