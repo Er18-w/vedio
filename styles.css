@@ -933,10 +933,10 @@ a:focus-visible {
 .progress-runner {
   position: absolute;
   z-index: 2;
-  right: -29px;
+  right: -20px;
   top: 50%;
-  width: 60px;
-  height: 90px;
+  width: 42px;
+  height: 63px;
   overflow: hidden;
   pointer-events: none;
   transform: translateY(-52%);
