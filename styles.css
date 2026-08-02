@@ -2073,6 +2073,59 @@ body {
   }
 }
 
+/* Keep the entry and result views on one stable phone canvas when viewed on larger screens. */
+@media (min-width: 431px) {
+  body[data-screen="home-screen"],
+  body[data-screen="result-screen"] {
+    background: #102013;
+  }
+
+  body[data-screen="home-screen"] .topbar,
+  body[data-screen="result-screen"] .topbar {
+    width: 430px;
+    max-width: 100%;
+    margin-inline: auto;
+  }
+
+  body[data-screen="home-screen"] .topbar {
+    top: 24px;
+    left: 50%;
+    right: auto;
+    padding-inline: 17px;
+    transform: translateX(-50%);
+  }
+
+  #home-screen,
+  #result-screen {
+    width: 430px;
+    max-width: 100%;
+    margin: 24px auto;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.09), 0 24px 70px rgba(0, 0, 0, 0.38);
+  }
+
+  body[data-screen="result-screen"] .topbar {
+    margin-top: 24px;
+    margin-bottom: 0;
+  }
+
+  #home-screen .home-video-hero {
+    height: 844px;
+    min-height: 844px;
+  }
+
+  #home-screen .home-video-rule {
+    left: 18px;
+    right: 18px;
+  }
+
+  #result-screen .poster-result-stage,
+  #result-screen .static-result-poster {
+    width: 430px;
+    max-width: 100%;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     scroll-behavior: auto !important;
@@ -4692,5 +4745,57 @@ body[data-screen="home-screen"] .home-audio-toggle.is-on {
     left: 16px;
     right: 16px;
     bottom: 12px;
+  }
+}
+
+/* Final phone-canvas lock: keep the opening and result views calm on larger displays. */
+@media (min-width: 431px) {
+  body[data-screen="home-screen"],
+  body[data-screen="result-screen"] {
+    background: #030503 !important;
+  }
+
+  body[data-screen="home-screen"] .topbar,
+  body[data-screen="result-screen"] .topbar {
+    width: 430px !important;
+    max-width: 100% !important;
+  }
+
+  body[data-screen="home-screen"] .topbar {
+    inset: 24px auto auto 50% !important;
+    height: 82px;
+    margin: 0 !important;
+    padding-inline: 17px !important;
+    transform: translateX(-50%);
+  }
+
+  body[data-screen="result-screen"] .topbar {
+    margin: 24px auto 0 !important;
+  }
+
+  #home-screen,
+  #result-screen {
+    width: 430px !important;
+    max-width: 100% !important;
+    margin: 24px auto !important;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.09), 0 24px 70px rgba(0, 0, 0, 0.38);
+  }
+
+  #home-screen .home-video-hero {
+    width: 100%;
+    height: 844px;
+    min-height: 844px;
+  }
+
+  #home-screen .home-video-rule {
+    left: 18px;
+    right: 18px;
+  }
+
+  #result-screen .poster-result-stage,
+  #result-screen .static-result-poster {
+    width: 430px !important;
+    max-width: 100% !important;
   }
 }
