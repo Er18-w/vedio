@@ -1,0 +1,45 @@
+name: Deploy to Tencent EdgeOne
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: edgeone-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      EDGEONE_API_TOKEN: ${{ secrets.EDGEONE_API_TOKEN }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.11.0"
+
+      - name: Build static site
+        run: node scripts/build-edgeone.mjs
+
+      - name: Deploy production
+        if: env.EDGEONE_API_TOKEN != ''
+        run: >-
+          npx --yes edgeone@1.6.19 makers deploy ./dist
+          --name cbti-coffee-test
+          --token "$EDGEONE_API_TOKEN"
+          --env production
+          --area overseas
+
+      - name: Explain missing token
+        if: env.EDGEONE_API_TOKEN == ''
+        run: echo "EDGEONE_API_TOKEN is not configured; deployment was skipped."
