@@ -36,6 +36,23 @@ const families: BeanCode[][] = [
   ["IDOL", "YOLO"],
 ];
 
+// Keep character artwork keyed by the same stable code used by scoring.
+// This prevents display order or translated filenames from mismatching a profile.
+const beanImages: Record<BeanCode, string> = {
+  HOLD: "/characters/HOLD.png", // 稳豆
+  LOL: "/characters/LOL.png", // 乐豆
+  OKOK: "/characters/OKOK.png", // 圆豆
+  WHY: "/characters/WHY.png", // 反骨豆
+  LOAD: "/characters/LOAD.png", // 慢豆
+  IMOK: "/characters/IMOK.png", // 硬豆
+  IDOL: "/characters/IDOL.png", // 爱豆
+  YOLO: "/characters/YOLO.png", // 浪豆
+  HUGS: "/characters/HUGS.png", // 暖豆
+  SUGR: "/characters/SUGR.png", // 糖豆
+  RETRY: "/characters/RETRY.png", // 战豆
+  SOLO: "/characters/SOLO.png", // 独豆
+};
+
 const profiles: Record<
   BeanCode,
   {
@@ -506,17 +523,13 @@ function BeanCharacter({ code, small = false }: { code: BeanCode; small?: boolea
   return (
     <div
       className={`bean-character ${small ? "bean-small" : ""}`}
-      style={{ "--bean-color": profiles[code].color } as React.CSSProperties}
-      aria-hidden="true"
+      data-bean-code={code}
     >
-      <span className="bean-shine" />
-      <span className="bean-eye eye-left" />
-      <span className="bean-eye eye-right" />
-      <span className="bean-mouth" />
-      <span className="bean-arm arm-left" />
-      <span className="bean-arm arm-right" />
-      <span className="bean-leg leg-left" />
-      <span className="bean-leg leg-right" />
+      <img
+        src={beanImages[code]}
+        alt={`${profiles[code].name}人格形象`}
+        draggable={false}
+      />
     </div>
   );
 }

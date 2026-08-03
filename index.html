@@ -141,6 +141,114 @@
       </section>
 
       <section class="screen result-screen" id="result-screen" aria-live="polite">
+        <section class="forest-result-layout" id="forest-result-layout" aria-label="你的咖啡豆人格结果">
+          <div class="poster-hotspot-layer" aria-label="结果页人物选择区">
+            <span class="result-scene-marker" id="result-scene-marker" aria-hidden="true"></span>
+            <div class="scene-character-hotspots" id="scene-character-hotspots"></div>
+          </div>
+          <div class="forest-poster-spacer" aria-hidden="true"></div>
+
+          <section class="forest-detail-board" id="forest-detail-board" aria-label="你的专属豆格解析">
+            <div class="detail-board-column detail-board-column-left">
+              <article class="detail-board-card detail-board-profile">
+                <div class="detail-board-portrait"><img id="detail-board-image" src="" alt="" /></div>
+                <div class="detail-board-identity">
+                  <p class="detail-board-label">你的豆格是</p>
+                  <h2><span id="detail-board-name"></span><small id="detail-board-code"></small></h2>
+                  <p class="detail-board-title" id="detail-board-title"></p>
+                  <blockquote id="detail-board-line"></blockquote>
+                  <div class="detail-board-tags" id="detail-board-tags"></div>
+                </div>
+                <div class="detail-board-actions">
+                  <button type="button" data-action="copy">保存结果卡</button>
+                  <button type="button" data-action="restart">重新测试</button>
+                  <button type="button" class="detail-board-share" data-action="copy">分享我的豆格</button>
+                </div>
+              </article>
+
+              <article class="detail-board-card detail-board-origin">
+                <h3>● 豆格来源</h3><p id="detail-board-origin"></p>
+              </article>
+            </div>
+
+            <div class="detail-board-column detail-board-column-right">
+              <article class="detail-board-card detail-board-analysis">
+                <h3>● 豆格解析</h3><p id="detail-board-analysis"></p>
+              </article>
+              <article class="detail-board-card detail-board-drink">
+                <h3>● 对应推荐饮品</h3>
+                <div class="detail-board-drink-content"><img class="detail-board-cup" id="detail-board-drink-image" src="" alt="" /><div><strong id="detail-board-drink"></strong><small id="detail-board-group"></small><div class="detail-board-drink-tags" id="detail-board-flavor"></div></div></div>
+              </article>
+              <article class="detail-board-card detail-board-match">
+                <h3>● 为什么与豆格相符</h3><p id="detail-board-match"></p>
+              </article>
+            </div>
+          </section>
+
+          <section class="forest-feedback-sheet" id="forest-feedback-sheet" hidden aria-label="你的豆格反馈">
+            <button type="button" class="forest-sheet-close" data-action="close-forest-feedback" aria-label="关闭反馈">×</button>
+            <p>YOUR CBTI RESULT</p>
+            <div class="forest-sheet-identity">
+              <img id="forest-sheet-image" src="" alt="" />
+              <div><h2 id="forest-sheet-name"></h2><strong id="forest-sheet-code"></strong></div>
+            </div>
+            <blockquote id="forest-sheet-line"></blockquote>
+            <article><small>春咖咖推荐饮品</small><h3 id="forest-sheet-drink"></h3><p id="forest-sheet-group"></p></article>
+            <article><small>你的豆格反馈</small><p id="forest-sheet-copy"></p></article>
+            <article><small>豆格来源 · 为什么相符</small><p id="forest-sheet-evidence"></p></article>
+            <button type="button" class="forest-sheet-share" data-action="copy">分享我的结果</button>
+          </section>
+
+          <header class="forest-title-board">
+            <span>CBTI</span>
+            <h1>咖啡豆人格结果</h1>
+            <p>12 种咖啡灵魂 · 发现真实的你</p>
+          </header>
+
+          <section class="forest-hero-card">
+            <div class="forest-current-bean">
+              <span class="forest-index" id="forest-result-index">01</span>
+              <img id="forest-result-image" src="" alt="" />
+              <span class="forest-current-badge">你的结果</span>
+            </div>
+            <div class="forest-hero-copy">
+              <p>YOUR BEAN TYPE</p>
+              <h2 id="forest-result-name"></h2>
+              <strong id="forest-result-code"></strong>
+              <blockquote id="forest-result-line"></blockquote>
+            </div>
+          </section>
+
+          <section class="forest-feedback-grid">
+            <article class="forest-info-card forest-drink-card">
+              <p class="forest-card-label">春咖咖推荐饮品</p>
+              <h3 id="forest-result-drink"></h3>
+              <small id="forest-result-group"></small>
+              <p id="forest-result-flavor"></p>
+            </article>
+            <article class="forest-info-card">
+              <p class="forest-card-label">你的豆格反馈</p>
+              <p id="forest-result-copy"></p>
+            </article>
+            <article class="forest-info-card forest-wide-card">
+              <p class="forest-card-label">豆格来源 · 为什么相符</p>
+              <p id="forest-result-evidence"></p>
+            </article>
+          </section>
+
+          <section class="forest-directory">
+            <div class="forest-directory-title"><span>☕</span><h2>12 种豆格人格</h2><span>☕</span></div>
+            <p>点选任意豆格，查看它的专属人格反馈与春咖咖饮品。</p>
+            <div class="forest-roster" id="forest-roster"></div>
+          </section>
+
+          <div class="forest-result-actions">
+            <button type="button" data-action="home">返回首页</button>
+            <button type="button" data-action="copy">分享结果</button>
+            <button type="button" data-action="restart">再测一次</button>
+          </div>
+        </section>
+
         <div class="poster-result-stage" id="poster-result-stage">
           <img
             class="static-result-poster"
@@ -149,17 +257,11 @@
             aria-hidden="true"
           />
           <section class="interactive-bean-map" id="interactive-bean-map" aria-label="动态豆格地图，可点击任意豆格查看资料">
-            <video
-              id="personality-map-video"
-              src="assets/personality-map.mp4"
-              poster="assets/result-page-static.png"
-              autoplay
-              muted
-              loop
-              playsinline
-              preload="metadata"
-              aria-hidden="true"
-            ></video>
+            <img
+              class="personality-map-background"
+              src="assets/personality-map-forest.png"
+              alt="12种咖啡豆格的森林场景地图"
+            />
             <div class="interactive-map-shade" id="interactive-map-shade" aria-hidden="true"></div>
             <div class="bean-map-hotspots" id="bean-map-hotspots"></div>
             <div class="map-instruction">点击任意豆格 · 查看完整资料</div>
@@ -266,8 +368,8 @@
           <header class="reveal-heading">
             <button class="back-home result-back" type="button" data-action="home">← 返回首页</button>
             <div>
-              <h1>你的豆格揭示</h1>
-              <p>12种杯中灵魂，发现真实的你</p>
+              <h1>你的 CBTI 豆格结果</h1>
+              <p>人格原型 · 春咖咖饮品 · 你的专属反馈</p>
             </div>
             <button class="share-seal" type="button" data-action="copy" aria-label="复制并分享结果">
               <span></span><span></span><span></span><i></i><i></i>

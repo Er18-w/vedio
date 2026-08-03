@@ -25,6 +25,18 @@ const MAP_BEACONS = {
   SUGR: [15.0, 50.6], WHY: [37.6, 58.5], RETRY: [62.4, 48.9], YOLO: [89.9, 53.1],
   IDOL: [14.6, 75.7], HUGS: [43.2, 79.4], SOLO: [66.0, 80.0], LOAD: [87.5, 77.8],
 };
+const SCENE_BEACONS = {
+  SUGR: [23, 21], RETRY: [50, 20], OKOK: [76, 20],
+  IDOL: [18, 43], HOLD: [48, 42], SOLO: [76, 43],
+  WHY: [17, 64], HUGS: [40, 63], YOLO: [58, 64], LOAD: [79, 64],
+  IMOK: [22, 85], LOL: [54, 85],
+};
+const DRINK_IMAGES = {
+  HOLD: "assets/drinks/HOLD.png", LOL: "assets/drinks/LOL.png", HUGS: "assets/drinks/HUGS.png",
+  RETRY: "assets/drinks/RETRY.png", IMOK: "assets/drinks/IMOK.png", OKOK: "assets/drinks/OKOK.png",
+  YOLO: "assets/drinks/YOLO.png", LOAD: "assets/drinks/LOAD.png", IDOL: "assets/drinks/IDOL.png",
+  WHY: "assets/drinks/WHY.png", SUGR: "assets/drinks/SUGR.png", SOLO: "assets/drinks/SOLO.png",
+};
 
 const questions = [
   {
@@ -913,6 +925,7 @@ function renderResult() {
   document.querySelector("#preference-copy").textContent = preferenceNote;
   document.querySelector("#mobile-preference-copy").textContent = preferenceNote;
   renderBeanRelations(bean);
+  renderForestResult(bean);
 
   document.querySelector("#dimension-list").innerHTML = DIMENSIONS.map((dimension, index) => {
     const value = state.profile[index] ?? bean.target[index];
@@ -927,6 +940,95 @@ function renderResult() {
       </div>
     `;
   }).join("");
+}
+
+function renderForestResult(bean) {
+  const originalBean = state.result;
+  const isPreview = Boolean(originalBean && bean.code !== originalBean.code);
+  const detailBoard = document.querySelector("#forest-detail-board");
+  detailBoard.classList.toggle("is-character-preview", isPreview);
+  detailBoard.dataset.viewingCode = bean.code;
+  detailBoard.dataset.originalCode = originalBean?.code || bean.code;
+  const index = beans.indexOf(bean) + 1;
+  const image = document.querySelector("#forest-result-image");
+  image.src = `assets/bean-${bean.image}.png`;
+  image.alt = `${bean.name} ${bean.code} 人格形象`;
+  document.querySelector("#forest-result-index").textContent = String(index).padStart(2, "0");
+  document.querySelector("#forest-result-name").textContent = bean.name;
+  document.querySelector("#forest-result-code").textContent = bean.code;
+  document.querySelector("#forest-result-line").textContent = bean.tagline;
+  document.querySelector("#forest-result-drink").textContent = bean.drink;
+  document.querySelector("#forest-result-group").textContent = bean.group;
+  document.querySelector("#forest-result-flavor").textContent = bean.flavor;
+  document.querySelector("#forest-result-copy").textContent = bean.result;
+  document.querySelector("#forest-result-evidence").textContent = bean.evidence;
+  const sheetImage = document.querySelector("#forest-sheet-image");
+  sheetImage.src = `assets/bean-${bean.image}.png`;
+  sheetImage.alt = `${bean.name} ${bean.code} 人格形象`;
+  document.querySelector("#forest-sheet-name").textContent = bean.name;
+  document.querySelector("#forest-sheet-code").textContent = bean.code;
+  document.querySelector("#forest-sheet-line").textContent = bean.tagline;
+  document.querySelector("#forest-sheet-drink").textContent = bean.drink;
+  document.querySelector("#forest-sheet-group").textContent = bean.group;
+  document.querySelector("#forest-sheet-copy").textContent = bean.result;
+  document.querySelector("#forest-sheet-evidence").textContent = bean.evidence;
+  const detailImage = document.querySelector("#detail-board-image");
+  detailImage.src = `assets/beans-cutout/bean-${bean.image}.png`;
+  detailImage.alt = `${bean.name} ${bean.code} 人格形象`;
+  document.querySelector("#detail-board-name").textContent = bean.name;
+  document.querySelector("#detail-board-code").textContent = bean.code;
+  document.querySelector("#detail-board-title").textContent = bean.group;
+  document.querySelector("#detail-board-line").textContent = bean.tagline;
+  document.querySelector("#detail-board-tags").innerHTML = bean.tags.slice(0, 3).map((tag) => `<span>${tag}</span>`).join("");
+  document.querySelector("#detail-board-analysis").textContent = bean.result;
+  document.querySelector("#detail-board-origin").textContent = bean.evidence;
+  document.querySelector("#detail-board-drink").textContent = bean.drink;
+  document.querySelector("#detail-board-group").textContent = bean.group;
+  const drinkTags = (bean.drink.match(/[（(]([^）)]+)[）)]/)?.[1] || "咖啡香，专属风味")
+    .split(/[，、,]/)
+    .map((tag) => tag.trim())
+    .filter(Boolean)
+    .slice(0, 3);
+  const drinkTagsNode = document.querySelector("#detail-board-flavor");
+  drinkTagsNode.innerHTML = "";
+  drinkTags.forEach((tag) => {
+    const chip = document.createElement("span");
+    chip.textContent = tag;
+    drinkTagsNode.appendChild(chip);
+  });
+  document.querySelector("#detail-board-match").textContent = bean.flavor;
+  const drinkImage = document.querySelector("#detail-board-drink-image");
+  drinkImage.src = DRINK_IMAGES[bean.code];
+  drinkImage.alt = `${bean.drink} 实拍图`;
+  const [sceneX, sceneY] = SCENE_BEACONS[bean.code];
+  const sceneMarker = document.querySelector("#result-scene-marker");
+  sceneMarker.style.setProperty("--scene-x", `${sceneX}%`);
+  sceneMarker.style.setProperty("--scene-y", `${sceneY}%`);
+  sceneMarker.dataset.label = isPreview ? `正在查看 · ${bean.name}` : `你的结果 · ${bean.name}`;
+
+  const sceneHotspots = document.querySelector("#scene-character-hotspots");
+  if (!sceneHotspots.children.length) {
+    sceneHotspots.innerHTML = beans.map((candidate) => {
+      const [x, y] = SCENE_BEACONS[candidate.code];
+      return `<button type="button" class="scene-character-hotspot" data-bean-code="${candidate.code}" style="--hotspot-x:${x}%;--hotspot-y:${y}%" aria-label="查看${candidate.name}"></button>`;
+    }).join("");
+  }
+  sceneHotspots.querySelectorAll(".scene-character-hotspot").forEach((button) => {
+    const active = button.dataset.beanCode === bean.code;
+    const original = button.dataset.beanCode === originalBean?.code;
+    button.classList.toggle("is-active", active);
+    button.classList.toggle("is-original", original);
+    button.setAttribute("aria-pressed", String(active));
+  });
+}
+
+function openForestFeedback() {
+  document.querySelector("#forest-detail-board")?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function closeForestFeedback() {
+  document.querySelector("#forest-feedback-sheet").hidden = true;
+  document.body.style.overflow = "";
 }
 
 function renderPosterResult(bean) {
@@ -1007,19 +1109,28 @@ function browseBean(code) {
   const bean = beans.find((item) => item.code === code);
   if (!bean || !state.result) return;
   renderPosterResult(bean);
+  renderWorldRoster(bean);
   renderBeanRelations(bean);
   renderInteractiveMap(bean);
+  renderForestResult(bean);
 }
 
 function renderWorldRoster(currentBean) {
   const roster = beans.filter((bean) => bean.code !== currentBean.code);
   roster.splice(9, 0, currentBean);
-  document.querySelector("#world-roster").innerHTML = roster.map((bean) => `
-    <article class="world-bean ${bean.code === currentBean.code ? "is-current" : ""}">
-      ${bean.code === currentBean.code ? "<span>本次揭示</span>" : ""}
+  const rosterMarkup = roster.map((bean) => `
+    <button class="world-bean ${bean.code === currentBean.code ? "is-current" : ""}" type="button" data-bean-code="${bean.code}">
       <img src="assets/bean-${bean.image}.png" alt="${bean.name} ${bean.code}" />
-    </article>
+      <strong>${bean.name}</strong><small>${bean.code}</small>
+      ${bean.code === currentBean.code ? "<span>当前</span>" : ""}
+    </button>
   `).join("");
+  document.querySelectorAll("#world-roster, #forest-roster").forEach((rosterElement) => {
+    rosterElement.innerHTML = rosterMarkup;
+    rosterElement.querySelectorAll(".world-bean").forEach((button) => {
+      button.addEventListener("click", () => browseBean(button.dataset.beanCode));
+    });
+  });
 }
 
 function renderBeanRelations(bean) {
@@ -1136,6 +1247,8 @@ document.addEventListener("click", (event) => {
   }
   if (action === "copy") copyResult();
   if (action === "original-result" && state.result) browseBean(state.result.code);
+  if (action === "open-forest-feedback") openForestFeedback();
+  if (action === "close-forest-feedback") closeForestFeedback();
   if (action === "toggle-audio" && els.homeHeroVideo) {
     els.homeHeroVideo.muted = !els.homeHeroVideo.muted;
     const button = event.target.closest("[data-action='toggle-audio']");
