@@ -1315,192 +1315,36 @@ button {
   font-style: normal;
 }
 
-/* CSS bean used for result placeholders until character art arrives */
+/* Named character artwork. The scoring code selects the matching image. */
 
 .bean-character {
-  --bean-color: #d89040;
   width: 230px;
   height: 298px;
   position: relative;
   z-index: 1;
   flex: 0 0 auto;
-  border-radius: 48% 52% 48% 50% / 42% 44% 58% 58%;
-  background:
-    radial-gradient(circle at 34% 22%, rgba(255, 255, 255, 0.48), transparent 17%),
-    var(--bean-color);
-  box-shadow: inset -18px -22px 0 rgba(71, 43, 23, 0.11), 0 30px 40px rgba(99, 61, 22, 0.16);
   transform: rotate(4deg);
 }
 
-.bean-character::before {
-  content: "";
-  position: absolute;
-  inset: 7px 43%;
-  border-left: 5px solid rgba(83, 48, 24, 0.38);
-  border-radius: 50%;
-  transform: rotate(10deg);
-}
-
-.bean-shine {
-  position: absolute;
-  width: 18px;
-  height: 62px;
-  left: 42px;
-  top: 42px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.24);
-  transform: rotate(28deg);
-}
-
-.bean-eye {
-  position: absolute;
-  top: 112px;
-  width: 14px;
-  height: 19px;
-  border-radius: 50%;
-  background: #2e211b;
-}
-
-.eye-left {
-  left: 65px;
-}
-
-.eye-right {
-  right: 59px;
-}
-
-.bean-eye::after {
-  content: "";
-  position: absolute;
-  left: 3px;
-  top: 3px;
-  width: 4px;
-  height: 5px;
-  border-radius: 50%;
-  background: white;
-}
-
-.bean-mouth {
-  position: absolute;
-  left: 50%;
-  top: 148px;
-  width: 33px;
-  height: 16px;
-  border-bottom: 4px solid #3b231a;
-  border-radius: 0 0 50% 50%;
-  transform: translateX(-50%);
-}
-
-.bean-arm,
-.bean-leg {
-  position: absolute;
-  z-index: -1;
+.bean-character img {
   display: block;
-  border-radius: 999px;
-  background: #3c2b22;
-}
-
-.bean-arm {
-  top: 191px;
-  width: 66px;
-  height: 6px;
-}
-
-.arm-left {
-  left: -47px;
-  transform: rotate(-25deg);
-}
-
-.arm-right {
-  right: -47px;
-  transform: rotate(28deg);
-}
-
-.bean-leg {
-  bottom: -44px;
-  width: 7px;
-  height: 65px;
-}
-
-.leg-left {
-  left: 73px;
-  transform: rotate(9deg);
-}
-
-.leg-right {
-  right: 68px;
-  transform: rotate(-10deg);
+  width: 100%;
+  height: 100%;
+  border-radius: 30px;
+  object-fit: cover;
+  object-position: center;
+  mix-blend-mode: multiply;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 .bean-small {
   width: 72px;
   height: 94px;
-  box-shadow: inset -6px -7px 0 rgba(71, 43, 23, 0.1), 0 10px 18px rgba(73, 45, 22, 0.12);
 }
 
-.bean-small::before {
-  inset: 4px 43%;
-  border-left-width: 2px;
-}
-
-.bean-small .bean-shine {
-  width: 6px;
-  height: 20px;
-  left: 13px;
-  top: 14px;
-}
-
-.bean-small .bean-eye {
-  top: 35px;
-  width: 5px;
-  height: 7px;
-}
-
-.bean-small .eye-left {
-  left: 21px;
-}
-
-.bean-small .eye-right {
-  right: 19px;
-}
-
-.bean-small .bean-eye::after {
-  display: none;
-}
-
-.bean-small .bean-mouth {
-  top: 47px;
-  width: 11px;
-  height: 5px;
-  border-bottom-width: 2px;
-}
-
-.bean-small .bean-arm {
-  top: 60px;
-  width: 22px;
-  height: 2px;
-}
-
-.bean-small .arm-left {
-  left: -15px;
-}
-
-.bean-small .arm-right {
-  right: -15px;
-}
-
-.bean-small .bean-leg {
-  bottom: -14px;
-  width: 3px;
-  height: 21px;
-}
-
-.bean-small .leg-left {
-  left: 24px;
-}
-
-.bean-small .leg-right {
-  right: 22px;
+.bean-small img {
+  border-radius: 12px;
 }
 
 /* Result story */

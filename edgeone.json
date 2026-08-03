@@ -1,0 +1,17 @@
+{
+  "installCommand": "node --version",
+  "buildCommand": "node scripts/build-edgeone.mjs",
+  "outputDirectory": "./dist",
+  "nodeVersion": "22.11.0",
+  "headers": [
+    {
+      "source": "/assets/*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400"
+        }
+      ]
+    }
+  ]
+}
