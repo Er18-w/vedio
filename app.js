@@ -666,6 +666,21 @@ const beans = [
     ]
   }
 ];
+const SHARE_CARD_IMAGES = {
+  HOLD: "assets/share-cards/HOLD.jpg",
+  SOLO: "assets/share-cards/SOLO.jpg",
+  IMOK: "assets/share-cards/IMOK.jpg",
+  IDOL: "assets/share-cards/IDOL.jpg",
+  LOL: "assets/share-cards/LOL.jpg",
+  HUGS: "assets/share-cards/HUGS.jpg",
+  RETRY: "assets/share-cards/RETRY.jpg",
+  SUGR: "assets/share-cards/SUGR.jpg",
+  OKOK: "assets/share-cards/OKOK.jpg",
+  YOLO: "assets/share-cards/YOLO.jpg",
+  LOAD: "assets/share-cards/LOAD.jpg",
+  WHY: "assets/share-cards/WHY.jpg",
+};
+
 const state = {
   current: 0,
   answers: Array(questions.length).fill(null),
@@ -696,6 +711,10 @@ const els = {
   progressRunnerVideo: document.querySelector("#progress-runner-video"),
   progressRunnerCanvas: document.querySelector("#progress-runner-canvas"),
   modal: document.querySelector("#method-modal"),
+  shareCardModal: document.querySelector("#share-card-modal"),
+  shareCardPreview: document.querySelector("#share-card-preview"),
+  shareCardSubtitle: document.querySelector("#share-card-subtitle"),
+  shareCardGuide: document.querySelector("#share-card-guide"),
   toast: document.querySelector("#toast"),
 };
 
@@ -1201,14 +1220,25 @@ function showToast(text) {
   window.setTimeout(() => els.toast.classList.remove("is-visible"), 1800);
 }
 
-async function copyResult() {
-  if (!state.result) return;
-  const bean = state.result;
-  const shareUrl = location.protocol === "file:" ? "" : `\n${location.href}`;
-  const text = `我的 CBTI 豆格是「${bean.name} · ${bean.code}」\n杯中化身：${bean.drink}\n${bean.result}${shareUrl}`;
+function getShareDetails(bean = state.result) {
+  const shareUrl = new URL(location.href);
+  shareUrl.search = "";
+  shareUrl.searchParams.set("result", bean.code);
+  shareUrl.searchParams.set("milk", state.preferences.milk);
+  shareUrl.searchParams.set("taste", state.preferences.taste);
+  return {
+    title: `我的 CBTI 豆格是${bean.name} · ${bean.code}`,
+    text: `我的 CBTI 豆格是「${bean.name} · ${bean.code}」\n杯中化身：${bean.drink}\n来测测你的咖啡豆人格。`,
+    url: location.protocol === "file:" ? "https://www.cbtidd.top" : shareUrl.href,
+  };
+}
+
+async function copyShareText(bean = state.result) {
+  if (!bean) return;
+  const share = getShareDetails(bean);
+  const text = `${share.text}\n${share.url}`;
   try {
     await navigator.clipboard.writeText(text);
-    showToast("结果已复制，去分享你的豆格吧");
   } catch {
     const area = document.createElement("textarea");
     area.value = text;
@@ -1216,8 +1246,99 @@ async function copyResult() {
     area.select();
     document.execCommand("copy");
     area.remove();
-    showToast("结果已复制");
   }
+}
+
+function openShareCard() {
+  if (!state.result || !els.shareCardModal) return;
+  const bean = state.result;
+  const imagePath = SHARE_CARD_IMAGES[bean.code];
+  els.shareCardPreview.src = imagePath;
+  els.shareCardPreview.alt = `${bean.name} ${bean.code} CBTI 豆格身份卡`;
+  els.shareCardSubtitle.textContent = `${bean.name} · ${bean.code}`;
+  els.shareCardGuide.hidden = true;
+  els.shareCardModal.hidden = false;
+  document.body.style.overflow = "hidden";
+  window.setTimeout(() => els.shareCardModal.querySelector(".share-card-close")?.focus(), 0);
+}
+
+function closeShareCard() {
+  if (!els.shareCardModal) return;
+  els.shareCardModal.hidden = true;
+  els.shareCardGuide.hidden = true;
+  document.body.style.overflow = "";
+}
+
+async function fetchShareCard(bean = state.result) {
+  if (!bean) throw new Error("No CBTI result");
+  const response = await fetch(SHARE_CARD_IMAGES[bean.code]);
+  if (!response.ok) throw new Error(`Unable to load share card: ${response.status}`);
+  const blob = await response.blob();
+  return new File([blob], `CBTI-${bean.code}-${bean.name}-身份卡.jpg`, { type: "image/jpeg" });
+}
+
+async function downloadShareCard() {
+  if (!state.result) return;
+  const bean = state.result;
+  try {
+    const file = await fetchShareCard(bean);
+    const objectUrl = URL.createObjectURL(file);
+    const link = document.createElement("a");
+    link.href = objectUrl;
+    link.download = file.name;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+    showToast("身份卡已开始保存");
+  } catch {
+    const link = document.createElement("a");
+    link.href = SHARE_CARD_IMAGES[bean.code];
+    link.download = `CBTI-${bean.code}-${bean.name}-身份卡.jpg`;
+    link.click();
+    showToast("请长按图片保存身份卡");
+  }
+}
+
+async function shareCard() {
+  if (!state.result) return;
+  const bean = state.result;
+  const share = getShareDetails(bean);
+  const isWeChat = /MicroMessenger/i.test(navigator.userAgent);
+
+  if (isWeChat) {
+    els.shareCardGuide.hidden = false;
+    await copyShareText(bean);
+    showToast("请点微信右上角“…”分享");
+    return;
+  }
+
+  try {
+    if (navigator.share) {
+      const file = await fetchShareCard(bean);
+      const fileShare = { title: share.title, text: `${share.text}\n${share.url}`, files: [file] };
+      if (!navigator.canShare || navigator.canShare({ files: [file] })) {
+        await navigator.share(fileShare);
+      } else {
+        await navigator.share(share);
+      }
+      return;
+    }
+  } catch (error) {
+    if (error?.name === "AbortError") return;
+    try {
+      if (navigator.share) {
+        await navigator.share(share);
+        return;
+      }
+    } catch (fallbackError) {
+      if (fallbackError?.name === "AbortError") return;
+    }
+  }
+
+  await copyShareText(bean);
+  els.shareCardGuide.hidden = false;
+  showToast("分享文案和链接已复制");
 }
 
 document.addEventListener("click", (event) => {
@@ -1245,7 +1366,11 @@ document.addEventListener("click", (event) => {
     els.modal.hidden = true;
     document.body.style.overflow = "";
   }
-  if (action === "copy") copyResult();
+  if (action === "copy") openShareCard();
+  if (action === "close-share-card") closeShareCard();
+  if (action === "download-share-card") downloadShareCard();
+  if (action === "share-card") shareCard();
+  if (action === "wechat-share-guide") els.shareCardGuide.hidden = !els.shareCardGuide.hidden;
   if (action === "original-result" && state.result) browseBean(state.result.code);
   if (action === "open-forest-feedback") openForestFeedback();
   if (action === "close-forest-feedback") closeForestFeedback();
@@ -1280,6 +1405,10 @@ els.next.addEventListener("click", () => {
 });
 
 document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && els.shareCardModal && !els.shareCardModal.hidden) {
+    closeShareCard();
+    return;
+  }
   if (event.key === "Escape" && !els.modal.hidden) {
     els.modal.hidden = true;
     document.body.style.overflow = "";

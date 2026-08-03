@@ -160,7 +160,7 @@
                   <div class="detail-board-tags" id="detail-board-tags"></div>
                 </div>
                 <div class="detail-board-actions">
-                  <button type="button" data-action="copy">保存结果卡</button>
+                  <button type="button" data-action="copy">打开身份卡</button>
                   <button type="button" data-action="restart">重新测试</button>
                   <button type="button" class="detail-board-share" data-action="copy">分享我的豆格</button>
                 </div>
@@ -277,7 +277,7 @@
               </button>
             </div>
           </section>
-          <button class="poster-share-hotspot" type="button" data-action="copy" aria-label="复制并分享结果"></button>
+          <button class="poster-share-hotspot" type="button" data-action="copy" aria-label="打开身份卡分享"></button>
 
           <article class="poster-identity-overlay">
             <img id="poster-result-image" src="" alt="" />
@@ -361,7 +361,7 @@
 
         <div class="poster-controls">
           <button type="button" data-action="home">返回首页</button>
-          <button class="is-primary" type="button" data-action="copy">复制结果</button>
+              <button class="is-primary" type="button" data-action="copy">保存 / 分享身份卡</button>
           <button type="button" data-action="restart">再测一次</button>
         </div>
         <div class="result-page shell">
@@ -371,7 +371,7 @@
               <h1>你的 CBTI 豆格结果</h1>
               <p>人格原型 · 春咖咖饮品 · 你的专属反馈</p>
             </div>
-            <button class="share-seal" type="button" data-action="copy" aria-label="复制并分享结果">
+              <button class="share-seal" type="button" data-action="copy" aria-label="打开身份卡分享">
               <span></span><span></span><span></span><i></i><i></i>
             </button>
           </header>
@@ -394,7 +394,7 @@
                 <h2><span id="result-name"></span><small id="result-code"></small></h2>
                 <p class="result-line" id="result-line"></p>
                 <div class="result-actions">
-                  <button class="archive-button is-filled" type="button" data-action="copy">复制结果</button>
+            <button class="archive-button is-filled" type="button" data-action="copy">保存身份卡</button>
                   <button class="archive-button" type="button" data-action="restart">再测一次</button>
                 </div>
               </div>
@@ -487,6 +487,35 @@
           CBTI推荐的是“杯中人格镜像”，不是“科学证明你一定爱喝这一杯”。每个结果均沿用人格核心—饮品形成—入口尾韵—结果文案的同一证据链。
         </p>
       </div>
+    </div>
+
+    <div class="share-card-modal" id="share-card-modal" role="dialog" aria-modal="true" aria-labelledby="share-card-title" hidden>
+      <button class="share-card-backdrop" type="button" data-action="close-share-card" aria-label="关闭身份卡"></button>
+      <section class="share-card-dialog">
+        <button class="share-card-close" type="button" data-action="close-share-card" aria-label="关闭">×</button>
+        <header class="share-card-header">
+          <p>YOUR CBTI IDENTITY CARD</p>
+          <h2 id="share-card-title">你的豆格身份卡</h2>
+          <span id="share-card-subtitle"></span>
+        </header>
+        <div class="share-card-preview-wrap">
+          <img id="share-card-preview" src="" alt="" />
+        </div>
+        <div class="share-card-actions">
+          <button class="share-card-save" type="button" data-action="download-share-card">
+            <span aria-hidden="true">⇩</span> 保存身份卡
+          </button>
+          <button class="share-card-share" type="button" data-action="share-card">
+            <span aria-hidden="true">↗</span> 分享给朋友
+          </button>
+        </div>
+        <button class="share-card-wechat" type="button" data-action="wechat-share-guide">微信朋友、群聊与朋友圈怎么分享？</button>
+        <div class="share-card-guide" id="share-card-guide" hidden>
+          <strong>在微信里分享</strong>
+          <p>点击微信右上角“…”即可选择“发送给朋友”；要发朋友圈，可先保存身份卡，再在朋友圈选择这张图片发布。</p>
+        </div>
+        <p class="share-card-note">卡片右下角二维码可扫码进入 CBTI 测试。手机浏览器会优先调用系统分享面板。</p>
+      </section>
     </div>
 
     <div class="toast" id="toast" role="status" aria-live="polite">结果已复制</div>

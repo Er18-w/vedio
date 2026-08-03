@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import test from "node:test";
 
 async function render() {
@@ -58,4 +58,23 @@ test("keeps all questions, page-turn flow, and normalized scoring in source", as
   assert.match(page, /你的性格配方/);
   assert.match(page, /YOUR YUNNAN FLAVOR/);
   assert.doesNotMatch(page, /scrollIntoView/);
+});
+
+test("ships all CBTI identity cards and the save/share flow", async () => {
+  const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+  const client = await readFile(new URL("../app.js", import.meta.url), "utf8");
+  const cardFiles = (await readdir(new URL("../assets/share-cards/", import.meta.url)))
+    .filter((file) => file.endsWith(".jpg"))
+    .sort();
+  const expectedCodes = ["HOLD", "HUGS", "IDOL", "IMOK", "LOAD", "LOL", "OKOK", "RETRY", "SOLO", "SUGR", "WHY", "YOLO"];
+
+  assert.deepEqual(cardFiles, expectedCodes.map((code) => `${code}.jpg`).sort());
+  assert.match(html, /id="share-card-modal"/);
+  assert.match(html, /data-action="download-share-card"/);
+  assert.match(html, /data-action="share-card"/);
+  assert.match(client, /navigator\.share/);
+  assert.match(client, /MicroMessenger/);
+  for (const code of expectedCodes) {
+    assert.match(client, new RegExp(`${code}: "assets/share-cards/${code}\\.jpg"`));
+  }
 });
