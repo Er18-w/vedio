@@ -176,7 +176,8 @@
                 <h3>● 豆格解析</h3><p id="detail-board-analysis"></p>
               </article>
               <article class="detail-board-card detail-board-drink">
-                <h3>● 对应推荐饮品</h3>
+                <div class="springcafe-brand springcafe-brand-panel"><img src="assets/springcafe-logo.png" alt="春咖咖" /><span><strong>春咖咖</strong>特约推荐饮品</span></div>
+                <h3>● 春咖咖饮品推荐</h3>
                 <div class="detail-board-drink-content"><img class="detail-board-cup" id="detail-board-drink-image" src="" alt="" /><div><strong id="detail-board-drink"></strong><small id="detail-board-group"></small><div class="detail-board-drink-tags" id="detail-board-flavor"></div></div></div>
               </article>
               <article class="detail-board-card detail-board-match">
@@ -193,7 +194,7 @@
               <div><h2 id="forest-sheet-name"></h2><strong id="forest-sheet-code"></strong></div>
             </div>
             <blockquote id="forest-sheet-line"></blockquote>
-            <article><small>春咖咖推荐饮品</small><h3 id="forest-sheet-drink"></h3><p id="forest-sheet-group"></p></article>
+            <article><div class="springcafe-brand springcafe-brand-compact"><img src="assets/springcafe-logo.png" alt="春咖咖" /><span>春咖咖推荐饮品</span></div><h3 id="forest-sheet-drink"></h3><p id="forest-sheet-group"></p></article>
             <article><small>你的豆格反馈</small><p id="forest-sheet-copy"></p></article>
             <article><small>豆格来源 · 为什么相符</small><p id="forest-sheet-evidence"></p></article>
             <button type="button" class="forest-sheet-share" data-action="copy">分享我的结果</button>
@@ -221,7 +222,7 @@
 
           <section class="forest-feedback-grid">
             <article class="forest-info-card forest-drink-card">
-              <p class="forest-card-label">春咖咖推荐饮品</p>
+              <div class="springcafe-brand"><img src="assets/springcafe-logo.png" alt="春咖咖" /><span><strong>春咖咖</strong>推荐饮品</span></div>
               <h3 id="forest-result-drink"></h3>
               <small id="forest-result-group"></small>
               <p id="forest-result-flavor"></p>
@@ -289,7 +290,8 @@
           </article>
 
           <article class="poster-drink-overlay">
-            <p>◆ 代表饮品</p>
+            <div class="springcafe-brand springcafe-brand-compact"><img src="assets/springcafe-logo.png" alt="春咖咖" /><span>春咖咖推荐</span></div>
+            <p>◆ 春咖咖饮品</p>
             <div class="poster-cup" aria-hidden="true"><i></i><span>CBTI</span></div>
             <div>
               <strong id="poster-result-drink"></strong>
@@ -325,7 +327,8 @@
           </article>
 
           <article class="mobile-result-drink mobile-archive-card">
-            <div class="mobile-card-title"><span>◆</span><h3>代表饮品</h3></div>
+            <div class="springcafe-brand springcafe-brand-compact"><img src="assets/springcafe-logo.png" alt="春咖咖" /><span>春咖咖推荐饮品</span></div>
+            <div class="mobile-card-title"><span>◆</span><h3>你的春咖咖饮品</h3></div>
             <div class="mobile-drink-body">
               <div class="mobile-cup" aria-hidden="true"><i></i><strong>CBTI</strong></div>
               <div>
@@ -404,7 +407,8 @@
 
             <div class="result-side-stack">
               <article class="drink-card parchment-panel">
-                <div class="panel-title"><i>◆</i><h3>代表饮品</h3><span></span></div>
+                <div class="springcafe-brand"><img src="assets/springcafe-logo.png" alt="春咖咖" /><span><strong>春咖咖</strong>特约推荐饮品</span></div>
+                <div class="panel-title"><i>◆</i><h3>你的春咖咖饮品</h3><span></span></div>
                 <div class="drink-card-body">
                   <div class="cup-illustration" aria-hidden="true">
                     <i class="steam steam-one"></i><i class="steam steam-two"></i>
@@ -503,18 +507,26 @@
         </div>
         <div class="share-card-actions">
           <button class="share-card-save" type="button" data-action="download-share-card">
-            <span aria-hidden="true">⇩</span> 保存身份卡
+            <span aria-hidden="true">⇩</span> 保存到手机相册
           </button>
           <button class="share-card-share" type="button" data-action="share-card">
-            <span aria-hidden="true">↗</span> 分享给朋友
+            <span aria-hidden="true">↗</span> 分享身份卡图片
           </button>
         </div>
+        <button class="share-card-moments" type="button" data-action="share-moments"><span aria-hidden="true">◎</span> 用身份卡图片发朋友圈</button>
         <button class="share-card-wechat" type="button" data-action="wechat-share-guide">微信朋友、群聊与朋友圈怎么分享？</button>
         <div class="share-card-guide" id="share-card-guide" hidden>
-          <strong>在微信里分享</strong>
-          <p>点击微信右上角“…”即可选择“发送给朋友”；要发朋友圈，可先保存身份卡，再在朋友圈选择这张图片发布。</p>
+          <strong>朋友圈发布的是图片，不再只是网址</strong>
+          <p>微信网页不能替你自动发布朋友圈。请长按身份卡保存到相册，再打开朋友圈选择这张身份卡图片；朋友和群聊也可直接发送该图片。</p>
         </div>
-        <p class="share-card-note">卡片右下角二维码可扫码进入 CBTI 测试。手机浏览器会优先调用系统分享面板。</p>
+        <p class="share-card-note">卡片右下角二维码可扫码进入 CBTI 测试。手机会优先分享图片文件，不再退回成网址卡片。</p>
+      </section>
+      <section class="share-photo-sheet" id="share-photo-sheet" aria-labelledby="share-photo-title" hidden>
+        <button class="share-photo-close" type="button" data-action="close-photo-guide" aria-label="关闭图片保存引导">×</button>
+        <header><p>保存的是标准 JPG 图片</p><h2 id="share-photo-title">长按身份卡，保存到手机相册</h2><span id="share-photo-copy">保存后打开朋友圈，选择这张身份卡图片发布。</span></header>
+        <img id="share-photo-preview" src="" alt="可长按保存的 CBTI 豆格身份卡" />
+        <div class="share-photo-steps"><strong>微信操作</strong><span>① 长按上方图片</span><span>② 选择“保存图片”</span><span>③ 打开朋友圈并选择该图片</span></div>
+        <button class="share-photo-done" type="button" data-action="close-photo-guide">我知道了</button>
       </section>
     </div>
 

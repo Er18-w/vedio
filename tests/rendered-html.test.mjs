@@ -72,8 +72,14 @@ test("ships all CBTI identity cards and the save/share flow", async () => {
   assert.match(html, /id="share-card-modal"/);
   assert.match(html, /data-action="download-share-card"/);
   assert.match(html, /data-action="share-card"/);
+  assert.match(html, /data-action="share-moments"/);
+  assert.match(html, /id="share-photo-sheet"/);
+  assert.match(html, /assets\/springcafe-logo\.png/);
+  assert.match(html, /春咖咖<\/strong>特约推荐饮品/);
   assert.match(client, /navigator\.share/);
   assert.match(client, /MicroMessenger/);
+  assert.match(client, /files: \[file\]/);
+  assert.match(client, /openPhotoGuide\("moments"\)/);
   for (const code of expectedCodes) {
     assert.match(client, new RegExp(`${code}: "assets/share-cards/${code}\\.jpg"`));
   }

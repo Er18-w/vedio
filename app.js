@@ -715,6 +715,10 @@ const els = {
   shareCardPreview: document.querySelector("#share-card-preview"),
   shareCardSubtitle: document.querySelector("#share-card-subtitle"),
   shareCardGuide: document.querySelector("#share-card-guide"),
+  sharePhotoSheet: document.querySelector("#share-photo-sheet"),
+  sharePhotoPreview: document.querySelector("#share-photo-preview"),
+  sharePhotoTitle: document.querySelector("#share-photo-title"),
+  sharePhotoCopy: document.querySelector("#share-photo-copy"),
   toast: document.querySelector("#toast"),
 };
 
@@ -1220,35 +1224,6 @@ function showToast(text) {
   window.setTimeout(() => els.toast.classList.remove("is-visible"), 1800);
 }
 
-function getShareDetails(bean = state.result) {
-  const shareUrl = new URL(location.href);
-  shareUrl.search = "";
-  shareUrl.searchParams.set("result", bean.code);
-  shareUrl.searchParams.set("milk", state.preferences.milk);
-  shareUrl.searchParams.set("taste", state.preferences.taste);
-  return {
-    title: `我的 CBTI 豆格是${bean.name} · ${bean.code}`,
-    text: `我的 CBTI 豆格是「${bean.name} · ${bean.code}」\n杯中化身：${bean.drink}\n来测测你的咖啡豆人格。`,
-    url: location.protocol === "file:" ? "https://www.cbtidd.top" : shareUrl.href,
-  };
-}
-
-async function copyShareText(bean = state.result) {
-  if (!bean) return;
-  const share = getShareDetails(bean);
-  const text = `${share.text}\n${share.url}`;
-  try {
-    await navigator.clipboard.writeText(text);
-  } catch {
-    const area = document.createElement("textarea");
-    area.value = text;
-    document.body.appendChild(area);
-    area.select();
-    document.execCommand("copy");
-    area.remove();
-  }
-}
-
 function openShareCard() {
   if (!state.result || !els.shareCardModal) return;
   const bean = state.result;
@@ -1264,9 +1239,41 @@ function openShareCard() {
 
 function closeShareCard() {
   if (!els.shareCardModal) return;
+  closePhotoGuide();
   els.shareCardModal.hidden = true;
   els.shareCardGuide.hidden = true;
   document.body.style.overflow = "";
+}
+
+function isWeChatBrowser() {
+  return /MicroMessenger/i.test(navigator.userAgent);
+}
+
+function isMobileBrowser() {
+  return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || window.matchMedia?.("(pointer: coarse)").matches;
+}
+
+function openPhotoGuide(mode = "save") {
+  if (!state.result || !els.sharePhotoSheet) return;
+  const bean = state.result;
+  els.sharePhotoPreview.src = SHARE_CARD_IMAGES[bean.code];
+  els.sharePhotoPreview.alt = `${bean.name} ${bean.code} CBTI 身份卡，可长按保存到相册`;
+  if (mode === "moments") {
+    els.sharePhotoTitle.textContent = "长按保存，再用身份卡图片发朋友圈";
+    els.sharePhotoCopy.textContent = "朋友圈会显示完整人格卡片；卡片二维码仍可进入测试。";
+  } else if (mode === "share") {
+    els.sharePhotoTitle.textContent = "长按保存，再把身份卡图片发给朋友";
+    els.sharePhotoCopy.textContent = "保存后可直接把这张图片发送给微信朋友或群聊。";
+  } else {
+    els.sharePhotoTitle.textContent = "长按身份卡，保存到手机相册";
+    els.sharePhotoCopy.textContent = "这是标准 JPG 图片，长按后选择“保存图片”。";
+  }
+  els.sharePhotoSheet.hidden = false;
+  window.setTimeout(() => els.sharePhotoSheet.querySelector(".share-photo-close")?.focus(), 0);
+}
+
+function closePhotoGuide() {
+  if (els.sharePhotoSheet) els.sharePhotoSheet.hidden = true;
 }
 
 async function fetchShareCard(bean = state.result) {
@@ -1277,9 +1284,42 @@ async function fetchShareCard(bean = state.result) {
   return new File([blob], `CBTI-${bean.code}-${bean.name}-身份卡.jpg`, { type: "image/jpeg" });
 }
 
+async function shareImageFile(mode = "share") {
+  if (!state.result || !navigator.share) return false;
+  const bean = state.result;
+  try {
+    const file = await fetchShareCard(bean);
+    if (navigator.canShare && !navigator.canShare({ files: [file] })) return false;
+    const actionText = mode === "moments" ? "我的 CBTI 豆格身份卡" : `我的豆格是「${bean.name} · ${bean.code}」`;
+    await navigator.share({
+      title: `CBTI ${bean.name}身份卡`,
+      text: actionText,
+      files: [file],
+    });
+    return true;
+  } catch (error) {
+    if (error?.name === "AbortError") return null;
+    return false;
+  }
+}
+
 async function downloadShareCard() {
   if (!state.result) return;
   const bean = state.result;
+  if (isWeChatBrowser()) {
+    openPhotoGuide("save");
+    return;
+  }
+  if (isMobileBrowser()) {
+    const shared = await shareImageFile("save");
+    if (shared === null) return;
+    if (shared) {
+      showToast("请在系统菜单选择“保存图像/存储到相册”");
+      return;
+    }
+    openPhotoGuide("save");
+    return;
+  }
   try {
     const file = await fetchShareCard(bean);
     const objectUrl = URL.createObjectURL(file);
@@ -1302,43 +1342,32 @@ async function downloadShareCard() {
 
 async function shareCard() {
   if (!state.result) return;
-  const bean = state.result;
-  const share = getShareDetails(bean);
-  const isWeChat = /MicroMessenger/i.test(navigator.userAgent);
-
-  if (isWeChat) {
+  if (isWeChatBrowser()) {
+    openPhotoGuide("share");
     els.shareCardGuide.hidden = false;
-    await copyShareText(bean);
-    showToast("请点微信右上角“…”分享");
     return;
   }
-
-  try {
-    if (navigator.share) {
-      const file = await fetchShareCard(bean);
-      const fileShare = { title: share.title, text: `${share.text}\n${share.url}`, files: [file] };
-      if (!navigator.canShare || navigator.canShare({ files: [file] })) {
-        await navigator.share(fileShare);
-      } else {
-        await navigator.share(share);
-      }
-      return;
-    }
-  } catch (error) {
-    if (error?.name === "AbortError") return;
-    try {
-      if (navigator.share) {
-        await navigator.share(share);
-        return;
-      }
-    } catch (fallbackError) {
-      if (fallbackError?.name === "AbortError") return;
-    }
+  const shared = await shareImageFile("share");
+  if (shared === null || shared) return;
+  if (isMobileBrowser()) {
+    openPhotoGuide("share");
+  } else {
+    await downloadShareCard();
+    showToast("身份卡图片已保存，可作为图片发送");
   }
+}
 
-  await copyShareText(bean);
+async function shareMoments() {
+  if (!state.result) return;
+  if (isWeChatBrowser()) {
+    openPhotoGuide("moments");
+    els.shareCardGuide.hidden = false;
+    return;
+  }
+  const shared = await shareImageFile("moments");
+  if (shared === null || shared) return;
+  openPhotoGuide("moments");
   els.shareCardGuide.hidden = false;
-  showToast("分享文案和链接已复制");
 }
 
 document.addEventListener("click", (event) => {
@@ -1370,6 +1399,8 @@ document.addEventListener("click", (event) => {
   if (action === "close-share-card") closeShareCard();
   if (action === "download-share-card") downloadShareCard();
   if (action === "share-card") shareCard();
+  if (action === "share-moments") shareMoments();
+  if (action === "close-photo-guide") closePhotoGuide();
   if (action === "wechat-share-guide") els.shareCardGuide.hidden = !els.shareCardGuide.hidden;
   if (action === "original-result" && state.result) browseBean(state.result.code);
   if (action === "open-forest-feedback") openForestFeedback();
@@ -1405,6 +1436,10 @@ els.next.addEventListener("click", () => {
 });
 
 document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && els.sharePhotoSheet && !els.sharePhotoSheet.hidden) {
+    closePhotoGuide();
+    return;
+  }
   if (event.key === "Escape" && els.shareCardModal && !els.shareCardModal.hidden) {
     closeShareCard();
     return;
