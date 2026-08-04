@@ -1749,7 +1749,7 @@ body {
   background-color: #0d2718;
   background-image:
     linear-gradient(180deg, rgba(5, 23, 14, 0.42), rgba(6, 28, 17, 0.63)),
-    url("assets/enchanted-forest-bg.png");
+    url("assets/enchanted-forest-bg.webp");
   background-position: center;
   background-size: cover;
   background-attachment: fixed;
@@ -2448,7 +2448,7 @@ body {
   inset: 0;
   background:
     linear-gradient(180deg, rgba(11, 38, 20, 0.12), rgba(12, 34, 16, 0.6)),
-    url("assets/personality-map-forest.png") center 36% / cover no-repeat;
+    url("assets/personality-map-forest.webp") center 36% / cover no-repeat;
 }
 
 #result-screen .world-vignette { display: none; }
@@ -2655,7 +2655,7 @@ body[data-screen="result-screen"] .topbar { display: none !important; }
   padding: 16px 10px 28px !important;
   background:
     linear-gradient(180deg, rgba(12, 38, 20, 0.96), rgba(21, 64, 34, 0.9) 18%, rgba(240, 214, 165, 0.98) 18%, #f0d6a5 100%),
-    url("assets/personality-map-forest.png") center top / cover fixed !important;
+    url("assets/personality-map-forest.webp") center top / cover fixed !important;
 }
 
 #result-screen > .poster-result-stage,
@@ -2725,7 +2725,7 @@ body[data-screen="result-screen"] .topbar { display: none !important; }
   opacity: 0.42;
   background:
     linear-gradient(90deg, rgba(15, 41, 20, 0.12), rgba(15, 41, 20, 0.72)),
-    url("assets/personality-map-forest.png") center 37% / cover no-repeat;
+    url("assets/personality-map-forest.webp") center 37% / cover no-repeat;
 }
 
 #result-screen .forest-current-bean,
@@ -2820,7 +2820,7 @@ body[data-screen="result-screen"] .topbar { display: none !important; }
   position: absolute;
   inset: 0;
   opacity: 0.18;
-  background: url("assets/personality-map-forest.png") center 43% / cover no-repeat;
+  background: url("assets/personality-map-forest.webp") center 43% / cover no-repeat;
 }
 
 #result-screen .forest-directory-title,
@@ -2906,7 +2906,7 @@ body[data-screen="result-screen"] .topbar { display: none !important; }
   display: block;
   width: 100%;
   aspect-ratio: 836 / 1881;
-  background: url("assets/result-layout-reference.png") center top / 100% 100% no-repeat;
+  background: url("assets/result-layout-reference.webp") center top / 100% 100% no-repeat;
 }
 
 #result-screen .poster-hotspot-layer { position: absolute; z-index: 2; top: 0; right: 0; left: 0; aspect-ratio: 836 / 1881; }
@@ -3089,7 +3089,7 @@ body[data-screen="result-screen"] .topbar { display: none !important; }
 
 #result-screen .forest-poster-spacer {
   aspect-ratio: 941 / 912;
-  background: url("assets/result-layout-scene.png") center top / 100% auto no-repeat;
+  background: url("assets/result-layout-scene.webp") center top / 100% auto no-repeat;
 }
 
 #result-screen .poster-hotspot-layer {
@@ -5383,7 +5383,7 @@ body[data-screen="result-screen"] .topbar { display: none !important; }
   background-image:
     linear-gradient(180deg, rgba(248, 250, 230, 0.73) 0%, rgba(236, 243, 216, 0.66) 48%, rgba(226, 237, 205, 0.76) 100%),
     radial-gradient(circle at 56% 8%, rgba(250, 255, 185, 0.58) 0%, rgba(235, 246, 178, 0.2) 28%, transparent 55%),
-    url("assets/enchanted-forest-bg.png");
+    url("assets/enchanted-forest-bg.webp");
   background-repeat: no-repeat;
   background-position: center, center, center 46%;
   background-size: cover, cover, cover;
@@ -5514,7 +5514,7 @@ body[data-screen="home-screen"] .home-audio-toggle.is-on {
   place-items: center;
   isolation: isolate;
   color: #fffdf1;
-  background: #142112 url("assets/home-hero-fallback.jpg") center / cover no-repeat;
+  background: #142112 url("assets/home-hero-fallback.webp") center / cover no-repeat;
 }
 
 .home-hero-video {
