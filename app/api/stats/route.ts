@@ -109,13 +109,62 @@ export async function GET() {
       .from(testCompletions)
       .where(sql`created_at LIKE ${today + "%"}`);
 
+    const [scToday] = await db
+      .select({ total: sql<number>`count(*)` })
+      .from(shareClicks)
+      .where(sql`created_at LIKE ${today + "%"}`);
+
+    // 近 7 天每日数据
+    const dailyTrend: { date: string; visits: number; completions: number; shares: number }[] = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const ds = d.toISOString().slice(0, 10);
+      const [pvD] = await db
+        .select({ total: sql<number>`count(*)` })
+        .from(pageViews)
+        .where(sql`created_at LIKE ${ds + "%"}`);
+      const [tcD] = await db
+        .select({ total: sql<number>`count(*)` })
+        .from(testCompletions)
+        .where(sql`created_at LIKE ${ds + "%"}`);
+      const [scD] = await db
+        .select({ total: sql<number>`count(*)` })
+        .from(shareClicks)
+        .where(sql`created_at LIKE ${ds + "%"}`);
+      dailyTrend.push({
+        date: ds.slice(5), // MM-DD
+        visits: pvD?.total ?? 0,
+        completions: tcD?.total ?? 0,
+        shares: scD?.total ?? 0,
+      });
+    }
+
+    // 最近 20 条完成记录
+    const recentCompletions = await db
+      .select({
+        createdAt: testCompletions.createdAt,
+        primaryBean: testCompletions.primaryBean,
+        secondaryBean: testCompletions.secondaryBean,
+      })
+      .from(testCompletions)
+      .orderBy(sql`created_at DESC`)
+      .limit(20);
+
     return Response.json({
-      pageViews: pv?.total ?? 0,
-      testCompletions: tc?.total ?? 0,
-      shareClicks: sc?.total ?? 0,
-      todayPageViews: pvToday?.total ?? 0,
-      todayTestCompletions: tcToday?.total ?? 0,
+      totals: {
+        pageViews: pv?.total ?? 0,
+        testCompletions: tc?.total ?? 0,
+        shareClicks: sc?.total ?? 0,
+      },
+      today: {
+        pageViews: pvToday?.total ?? 0,
+        testCompletions: tcToday?.total ?? 0,
+        shareClicks: scToday?.total ?? 0,
+      },
+      dailyTrend,
       beanDistribution: beans,
+      recentCompletions,
     });
   } catch (err) {
     console.error("Stats query error:", err);
