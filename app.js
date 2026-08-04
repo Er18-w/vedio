@@ -996,7 +996,7 @@ function renderForestResult(bean) {
   document.querySelector("#forest-sheet-copy").textContent = bean.result;
   document.querySelector("#forest-sheet-evidence").textContent = bean.evidence;
   const detailImage = document.querySelector("#detail-board-image");
-  detailImage.src = `assets/beans-cutout/bean-${bean.image}.png`;
+  detailImage.src = `assets/beans-cutout/bean-${bean.image}.webp`;
   detailImage.alt = `${bean.name} ${bean.code} 人格形象`;
   document.querySelector("#detail-board-name").textContent = bean.name;
   document.querySelector("#detail-board-code").textContent = bean.code;
