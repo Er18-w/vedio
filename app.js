@@ -1490,3 +1490,122 @@ document.addEventListener("keydown", (event) => {
 
 buildGallery();
 if (!restoreSharedResult()) showScreen("home-screen", false);
+
+// ============= Admin 后台（URL 加 ?admin=1 进入） =============
+(function initAdmin() {
+  if (new URLSearchParams(location.search).get("admin") !== "1") return;
+  const ADMIN_PW = "cbti2026";
+  if (sessionStorage.getItem("cbti_admin_ok") !== "1") {
+    const pw = prompt("🔒 CBTI 数据后台 - 输入密码");
+    if (pw !== ADMIN_PW) { alert("密码错误"); return; }
+    sessionStorage.setItem("cbti_admin_ok", "1");
+  }
+  // 注入后台 UI
+  document.body.innerHTML = `
+    <div style="min-height:100vh;background:#0f0f0f;color:#e5e5e5;font-family:system-ui,-apple-system,sans-serif;padding:24px 16px;">
+      <div style="max-width:1100px;margin:0 auto;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+          <div>
+            <h1 style="margin:0;font-size:24px;">📊 CBTI 数据后台</h1>
+            <p style="margin:4px 0 0;color:#888;font-size:13px;">www.cbtidd.top · 本机数据（实时刷新）</p>
+          </div>
+          <button id="adm-logout" style="padding:6px 14px;border-radius:6px;border:1px solid #444;background:transparent;color:#aaa;cursor:pointer;font-size:13px;">退出</button>
+        </div>
+        <div style="background:rgba(217,119,6,0.1);border:1px solid rgba(217,119,6,0.3);border-radius:8px;padding:14px 16px;font-size:13px;color:#fbbf24;margin-bottom:20px;">
+          <strong style="color:#fcd34d;">⚠️ 关于数据来源</strong><br>
+          当前显示的是<strong>本机浏览器</strong>的访问和操作记录。<br>
+          要看真实全站访客数据，推荐接入 <strong>Cloudflare Web Analytics</strong>（免费、无需账号）：
+          <a href="https://dash.cloudflare.com/?to=/:account/web-analytics" target="_blank" style="color:#60a5fa;">开通链接</a>，
+          拿到 beacon 脚本后粘到 index.html 的 &lt;/body&gt; 前即可。
+        </div>
+        <div id="adm-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:24px;"></div>
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:20px;margin-bottom:20px;">
+          <h2 style="margin:0 0 16px;font-size:16px;">📈 最近 7 天访问趋势（本机）</h2>
+          <div style="overflow-x:auto;"><svg id="adm-trend" viewBox="0 0 700 220" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;"></svg></div>
+        </div>
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:20px;margin-bottom:20px;">
+          <h2 style="margin:0 0 16px;font-size:16px;">🫘 豆格分布（主人格，本机）</h2>
+          <div id="adm-beans"></div>
+        </div>
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:20px;margin-bottom:20px;">
+          <h2 style="margin:0 0 16px;font-size:16px;">🕐 最近 20 条完成记录（本机）</h2>
+          <div style="overflow-x:auto;"><table id="adm-tbl" style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead><tr style="border-bottom:1px solid #333;"><th style="text-align:left;padding:8px 10px;color:#888;font-weight:500;">时间</th><th style="text-align:left;padding:8px 10px;color:#888;font-weight:500;">主人格</th><th style="text-align:left;padding:8px 10px;color:#888;font-weight:500;">副风味</th></tr></thead>
+            <tbody></tbody></table></div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById("adm-logout").onclick = () => {
+    sessionStorage.removeItem("cbti_admin_ok");
+    history.replaceState(null, "", location.pathname);
+    location.reload();
+  };
+  const BEAN_NAMES = {HOLD:'稳豆',LOL:'乐豆',OKOK:'圆豆',WHY:'反骨豆',LOAD:'慢豆',IMOK:'硬豆',IDOL:'爱豆',YOLO:'浪豆',HUGS:'暖豆',SUGR:'糖豆',RETRY:'战豆',SOLO:'独豆'};
+  const BEAN_COLORS = {HOLD:'#51745b',LOL:'#e19b45',OKOK:'#c9896b',WHY:'#674f7a',LOAD:'#6d8490',IMOK:'#556171',IDOL:'#c88096',YOLO:'#df755e',HUGS:'#b77d59',SUGR:'#e4a63c',RETRY:'#a94f3f',SOLO:'#4d7476'};
+  function render() {
+    let stats; try { stats = JSON.parse(localStorage.getItem("cbti_stats_v1")) || {visits:[],completions:[],shares:[],beanCounts:{}}; } catch { stats = {visits:[],completions:[],shares:[],beanCounts:{}}; }
+    const today = new Date().toISOString().slice(0,10);
+    const tv = stats.visits.filter(v => v.date === today).length;
+    const tp = stats.completions.length;
+    const ts = stats.shares.length;
+    const cr = stats.visits.length > 0 ? ((tp / stats.visits.length) * 100).toFixed(1) : "0.0";
+    const sr = tp > 0 ? ((ts / tp) * 100).toFixed(1) : "0.0";
+    document.getElementById("adm-grid").innerHTML = `
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-left:4px solid #3b82f6;border-radius:12px;padding:16px;"><div style="color:#888;font-size:12px;">总访问量</div><div style="font-size:28px;font-weight:700;color:#fff;margin:4px 0;">${stats.visits.length}</div><div style="color:#666;font-size:11px;">今日 ${tv}</div></div>
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-left:4px solid #10b981;border-radius:12px;padding:16px;"><div style="color:#888;font-size:12px;">总完成测试</div><div style="font-size:28px;font-weight:700;color:#fff;margin:4px 0;">${tp}</div><div style="color:#666;font-size:11px;">完成率 ${cr}%</div></div>
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-left:4px solid #f59e0b;border-radius:12px;padding:16px;"><div style="color:#888;font-size:12px;">总分享点击</div><div style="font-size:28px;font-weight:700;color:#fff;margin:4px 0;">${ts}</div><div style="color:#666;font-size:11px;">分享率 ${sr}%</div></div>
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-left:4px solid #8b5cf6;border-radius:12px;padding:16px;"><div style="color:#888;font-size:12px;">豆格种类数</div><div style="font-size:28px;font-weight:700;color:#fff;margin:4px 0;">${Object.keys(stats.beanCounts).length}</div><div style="color:#666;font-size:11px;">主人格分布</div></div>
+    `;
+    // 7 天趋势
+    const td = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(); d.setDate(d.getDate() - i);
+      const ds = d.toISOString().slice(0,10);
+      td.push({date: ds.slice(5), v: stats.visits.filter(x => x.date === ds).length, c: stats.completions.filter(x => x.date === ds).length, s: stats.shares.filter(x => x.date === ds).length});
+    }
+    const W=700,H=220,pL=40,pR=10,pT=20,pB=30,cw=W-pL-pR,ch=H-pT-pB;
+    const mx = Math.max(1, ...td.flatMap(d => [d.v, d.c, d.s]));
+    const xS = cw / Math.max(1, td.length - 1);
+    const tX = i => pL + i * xS;
+    const tY = v => pT + ch - (v / mx) * ch;
+    let svg = "";
+    [0,0.25,0.5,0.75,1].forEach(p => {
+      const y = pT + ch * p;
+      svg += `<line x1="${pL}" y1="${y}" x2="${W-pR}" y2="${y}" stroke="#333" stroke-width="0.5"/><text x="${pL-6}" y="${y+4}" fill="#666" font-size="10" text-anchor="end">${Math.round(mx*(1-p))}</text>`;
+    });
+    td.forEach((d, i) => { svg += `<text x="${tX(i)}" y="${H-10}" fill="#888" font-size="10" text-anchor="middle">${d.date}</text>`; });
+    [["v","#3b82f6","访问"],["c","#10b981","完成"],["s","#f59e0b","分享"]].forEach(([k,col]) => {
+      const path = td.map((d,i) => `${i===0?'M':'L'}${tX(i)},${tY(d[k])}`).join(" ");
+      svg += `<path d="${path}" stroke="${col}" stroke-width="2" fill="none"/>`;
+      td.forEach((d,i) => { svg += `<circle cx="${tX(i)}" cy="${tY(d[k])}" r="3" fill="${col}"/>`; });
+    });
+    svg += `<g transform="translate(${pL},${pT-6})"><circle cx="0" cy="0" r="4" fill="#3b82f6"/><text x="10" y="4" fill="#bbb" font-size="11">访问</text><circle cx="60" cy="0" r="4" fill="#10b981"/><text x="70" y="4" fill="#bbb" font-size="11">完成</text><circle cx="120" cy="0" r="4" fill="#f59e0b"/><text x="130" y="4" fill="#bbb" font-size="11">分享</text></g>`;
+    document.getElementById("adm-trend").innerHTML = svg;
+    // 豆格分布
+    const entries = Object.entries(stats.beanCounts).sort((a,b) => b[1] - a[1]);
+    if (entries.length === 0) {
+      document.getElementById("adm-beans").innerHTML = '<p style="color:#666;font-size:13px;">暂无数据，打开 cbtidd.top 走一遍测试，这里就会显示。</p>';
+    } else {
+      const mx2 = Math.max(...entries.map(e => e[1]));
+      document.getElementById("adm-beans").innerHTML = entries.map(([code, count]) => {
+        const name = BEAN_NAMES[code] || code;
+        const color = BEAN_COLORS[code] || "#666";
+        return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;font-size:12px;"><span style="width:60px;color:#aaa;flex-shrink:0;">${name}</span><div style="flex:1;height:18px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden;"><div style="width:${(count/mx2)*100}%;height:100%;background:${color};border-radius:3px;"></div></div><span style="width:35px;text-align:right;font-weight:600;flex-shrink:0;">${count}</span></div>`;
+      }).join("");
+    }
+    // 最近记录
+    const recent = stats.completions.slice(-20).reverse();
+    const tbody = document.querySelector("#adm-tbl tbody");
+    if (recent.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="3" style="color:#666;text-align:center;padding:16px;">暂无数据。打开 cbtidd.top 走一遍测试，这里就会显示。</td></tr>';
+    } else {
+      tbody.innerHTML = recent.map(r => {
+        const t = new Date(r.ts);
+        const ts2 = `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,"0")}-${String(t.getDate()).padStart(2,"0")} ${String(t.getHours()).padStart(2,"0")}:${String(t.getMinutes()).padStart(2,"0")}`;
+        return `<tr style="border-bottom:1px solid #222;"><td style="padding:8px 10px;">${ts2}</td><td style="padding:8px 10px;"><span style="display:inline-block;padding:2px 8px;border-radius:10px;background:${BEAN_COLORS[r.primary]||"#666"};color:#fff;font-size:11px;">${BEAN_NAMES[r.primary]||r.primary} · ${r.primary}</span></td><td style="padding:8px 10px;color:#aaa;">${BEAN_NAMES[r.secondary]||r.secondary} · ${r.secondary}</td></tr>`;
+      }).join("");
+    }
+  }
+  render();
+})();
