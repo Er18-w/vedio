@@ -3,6 +3,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ClickSpark from "./components/ClickSpark";
 
+/** 统计上报：向 /api/stats/event 发送事件 */
+function trackEvent(type: "visit" | "complete" | "share", extra?: Record<string, string>) {
+  fetch("/api/stats/event", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ type, ...extra }),
+  }).catch(() => { /* 上报失败不影响用户体验 */ });
+}
+
 type BeanCode =
   | "HOLD"
   | "LOL"
@@ -39,18 +48,18 @@ const families: BeanCode[][] = [
 // Keep character artwork keyed by the same stable code used by scoring.
 // This prevents display order or translated filenames from mismatching a profile.
 const beanImages: Record<BeanCode, string> = {
-  HOLD: "/characters/HOLD.png", // 稳豆
-  LOL: "/characters/LOL.png", // 乐豆
-  OKOK: "/characters/OKOK.png", // 圆豆
-  WHY: "/characters/WHY.png", // 反骨豆
-  LOAD: "/characters/LOAD.png", // 慢豆
-  IMOK: "/characters/IMOK.png", // 硬豆
-  IDOL: "/characters/IDOL.png", // 爱豆
-  YOLO: "/characters/YOLO.png", // 浪豆
-  HUGS: "/characters/HUGS.png", // 暖豆
-  SUGR: "/characters/SUGR.png", // 糖豆
-  RETRY: "/characters/RETRY.png", // 战豆
-  SOLO: "/characters/SOLO.png", // 独豆
+  HOLD: "/characters/HOLD.webp", // 稳豆
+  LOL: "/characters/LOL.webp", // 乐豆
+  OKOK: "/characters/OKOK.webp", // 圆豆
+  WHY: "/characters/WHY.webp", // 反骨豆
+  LOAD: "/characters/LOAD.webp", // 慢豆
+  IMOK: "/characters/IMOK.webp", // 硬豆
+  IDOL: "/characters/IDOL.webp", // 爱豆
+  YOLO: "/characters/YOLO.webp", // 浪豆
+  HUGS: "/characters/HUGS.webp", // 暖豆
+  SUGR: "/characters/SUGR.webp", // 糖豆
+  RETRY: "/characters/RETRY.webp", // 战豆
+  SOLO: "/characters/SOLO.webp", // 独豆
 };
 
 const profiles: Record<
@@ -529,6 +538,7 @@ function BeanCharacter({ code, small = false }: { code: BeanCode; small?: boolea
         src={beanImages[code]}
         alt={`${profiles[code].name}人格形象`}
         draggable={false}
+        loading="lazy"
       />
     </div>
   );
@@ -806,6 +816,11 @@ export default function Home() {
       await video.play().catch(() => undefined);
     }
   };
+
+  // 页面加载时上报访问
+  useEffect(() => {
+    trackEvent("visit");
+  }, []);
 
   useEffect(() => {
     const isResult =
@@ -1210,7 +1225,7 @@ export default function Home() {
                   <p className="eyebrow">BREWING YOUR RESULT</p>
                   <h2>20 个选择，已经萃取完毕。</h2>
                   <p>接下来会校正每种人格的题目曝光差异，再生成你的主人格与副风味。</p>
-                  <button className="primary-button" onClick={() => setSubmitted(true)}>
+                  <button className="primary-button" onClick={() => { setSubmitted(true); trackEvent("complete", { primaryBean: primaryCode ?? "", secondaryBean: secondaryCode ?? "" }); }}>
                     打开我的豆格报告 <span>→</span>
                   </button>
                   <button className="back-button" onClick={goBack}>
@@ -1421,7 +1436,7 @@ function Result({
       <blockquote>“{p.quote}”</blockquote>
 
       <div className="result-actions">
-        <button className="primary-button" onClick={() => window.print()}>
+        <button className="primary-button" onClick={() => { trackEvent("share", { action: "save", primaryBean: primary }); try { window.print(); } catch(e) { /* 微信浏览器不支持 print，忽略 */ } }}>
           保存结果页 <span>↗</span>
         </button>
         <button className="outline-button" onClick={onRestart}>再测一次</button>

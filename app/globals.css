@@ -189,7 +189,7 @@ button {
   display: inline-block;
   flex: 0 0 auto;
   position: relative;
-  background: url("/images/ordinary-bean.png") center / contain no-repeat;
+  background: url("/images/ordinary-bean.webp") center / contain no-repeat;
   filter: drop-shadow(0 7px 8px rgba(35, 20, 13, 0.24));
 }
 
@@ -780,7 +780,7 @@ button {
   width: 34px;
   height: 44px;
   pointer-events: none;
-  background: url("/images/ordinary-bean.png") center / contain no-repeat;
+  background: url("/images/ordinary-bean.webp") center / contain no-repeat;
   filter: drop-shadow(0 8px 8px rgba(77, 42, 24, 0.24));
   transform-origin: 50% 88%;
   animation: bean-transfer-to-track 1.2s cubic-bezier(0.34, 0.08, 0.18, 1) both;
@@ -1014,7 +1014,7 @@ button {
   display: block;
   width: 100%;
   height: 100%;
-  background: url("/images/ordinary-bean.png") center / contain no-repeat;
+  background: url("/images/ordinary-bean.webp") center / contain no-repeat;
   filter: drop-shadow(0 5px 5px rgba(87, 48, 24, 0.2));
   transform-origin: 50% 88%;
   animation: bean-run 0.48s ease-in-out infinite;
