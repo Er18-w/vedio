@@ -722,6 +722,40 @@ const els = {
   toast: document.querySelector("#toast"),
 };
 
+// ============= 统计埋点（localStorage，仅本机） =============
+const STATS_KEY = "cbti_stats_v1";
+function loadStats() {
+  try {
+    return JSON.parse(localStorage.getItem(STATS_KEY)) || { visits: [], completions: [], shares: [], beanCounts: {} };
+  } catch {
+    return { visits: [], completions: [], shares: [], beanCounts: {} };
+  }
+}
+function saveStats(s) {
+  try { localStorage.setItem(STATS_KEY, JSON.stringify(s)); } catch {}
+}
+function trackVisit() {
+  const s = loadStats();
+  s.visits.push({ date: new Date().toISOString().slice(0,10), ts: Date.now() });
+  saveStats(s);
+}
+function trackComplete(primary, secondary) {
+  const s = loadStats();
+  s.completions.push({ date: new Date().toISOString().slice(0,10), ts: Date.now(), primary, secondary });
+  s.beanCounts[primary] = (s.beanCounts[primary] || 0) + 1;
+  saveStats(s);
+}
+function trackShare(primary, action) {
+  const s = loadStats();
+  s.shares.push({ date: new Date().toISOString().slice(0,10), ts: Date.now(), primary, action });
+  saveStats(s);
+}
+// 页面加载时上报访问（异步、防重复）
+if (!sessionStorage.getItem("cbti_tracked_visit")) {
+  sessionStorage.setItem("cbti_tracked_visit", "1");
+  trackVisit();
+}
+
 let progressRunnerFrame = 0;
 
 function paintProgressRunner() {
@@ -918,6 +952,8 @@ function calculateResult() {
 
   state.profile = ranked.slice(0, 4).map((item) => Math.max(-2, Math.min(2, (item.index / 100) * 4 - 2)));
   state.result = ranked[0].bean;
+  // 埋点：完成测试
+  if (ranked[0] && ranked[1]) trackComplete(ranked[0].bean.code, ranked[1].bean.code);
   renderResult();
   showScreen("result-screen");
   updateShareUrl();
@@ -1296,6 +1332,7 @@ async function shareImageFile(mode = "share") {
       text: actionText,
       files: [file],
     });
+    trackShare(bean.code, mode === "moments" ? "save" : "share");
     return true;
   } catch (error) {
     if (error?.name === "AbortError") return null;
@@ -1330,6 +1367,7 @@ async function downloadShareCard() {
     link.click();
     link.remove();
     window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+    trackShare(bean.code, "save");
     showToast("身份卡已开始保存");
   } catch {
     const link = document.createElement("a");
