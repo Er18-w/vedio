@@ -3710,6 +3710,18 @@ body[data-screen="result-screen"] .topbar { display: none !important; }
   align-items: center;
 }
 
+.result-drink-image {
+  display: block;
+  width: 145px;
+  aspect-ratio: 4 / 5;
+  justify-self: center;
+  border: 1px solid rgba(104, 61, 31, 0.28);
+  border-radius: 6px;
+  object-fit: cover;
+  object-position: center;
+  box-shadow: 0 14px 24px rgba(75, 42, 20, 0.2);
+}
+
 .cup-illustration {
   position: relative;
   width: 145px;
@@ -4352,6 +4364,18 @@ body[data-screen="result-screen"] .topbar { display: none !important; }
   box-shadow: inset 1cqw 0 rgba(255,255,255,0.08), 0 1.2cqw 2cqw rgba(76,42,21,0.2);
 }
 
+.poster-drink-image {
+  display: block;
+  width: 12cqw;
+  aspect-ratio: 4 / 5;
+  justify-self: center;
+  border: 0.16cqw solid rgba(101, 58, 30, 0.3);
+  border-radius: 0.7cqw;
+  object-fit: cover;
+  object-position: center;
+  box-shadow: 0 1.2cqw 2cqw rgba(76, 42, 21, 0.2);
+}
+
 .poster-cup::before {
   content: "";
   position: absolute;
@@ -4673,11 +4697,24 @@ body[data-screen="result-screen"] .topbar { display: none !important; }
   }
 
   .mobile-drink-body {
-    min-height: 165px;
+    min-height: 200px;
     display: grid;
     grid-template-columns: 0.8fr 1.2fr;
     gap: 18px;
     align-items: center;
+  }
+
+  .mobile-drink-image {
+    display: block;
+    width: 100%;
+    max-width: 132px;
+    aspect-ratio: 4 / 5;
+    justify-self: center;
+    border: 1px solid rgba(101, 58, 30, 0.28);
+    border-radius: 6px;
+    object-fit: cover;
+    object-position: center;
+    box-shadow: 0 12px 20px rgba(76, 42, 21, 0.2);
   }
 
   .mobile-cup {
@@ -6475,7 +6512,7 @@ body[data-screen="result-screen"] #result-screen .forest-result-layout {
   }
 }
 
-/* 春咖咖 sponsor branding */
+/* Partner branding */
 .springcafe-brand {
   display: inline-flex;
   align-items: center;

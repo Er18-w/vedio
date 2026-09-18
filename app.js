@@ -32,10 +32,10 @@ const SCENE_BEACONS = {
   IMOK: [22, 85], LOL: [54, 85],
 };
 const DRINK_IMAGES = {
-  HOLD: "assets/drinks/HOLD.png", LOL: "assets/drinks/LOL.png", HUGS: "assets/drinks/HUGS.png",
-  RETRY: "assets/drinks/RETRY.png", IMOK: "assets/drinks/IMOK.png", OKOK: "assets/drinks/OKOK.png",
-  YOLO: "assets/drinks/YOLO.png", LOAD: "assets/drinks/LOAD.png", IDOL: "assets/drinks/IDOL.png",
-  WHY: "assets/drinks/WHY.png", SUGR: "assets/drinks/SUGR.png", SOLO: "assets/drinks/SOLO.png",
+  HOLD: "assets/drinks/HOLD.webp", LOL: "assets/drinks/LOL.webp", HUGS: "assets/drinks/HUGS.webp",
+  RETRY: "assets/drinks/RETRY.webp", IMOK: "assets/drinks/IMOK.webp", OKOK: "assets/drinks/OKOK.webp",
+  YOLO: "assets/drinks/YOLO.webp", LOAD: "assets/drinks/LOAD.webp", IDOL: "assets/drinks/IDOL.webp",
+  WHY: "assets/drinks/WHY.webp", SUGR: "assets/drinks/SUGR.webp", SOLO: "assets/drinks/SOLO.webp",
 };
 
 const questions = [
@@ -369,8 +369,9 @@ const beans = [
     "name": "稳豆",
     "code": "HOLD",
     "image": 1,
-    "drink": "美式咖啡（清爽醇苦，坚果焦糖感）",
-    "group": "意式咖啡风味体系",
+    "drink": "人民的咖啡（咖啡香纯粹，清爽提神）",
+    "drinkMatch": "你不是没有情绪，只是习惯先把事情处理好，再回头照顾自己的感受。人民的咖啡不靠复杂配料讨好谁，浓缩咖啡、纯净水和冰块把味道留在最清楚的位置；它像你面对生活时的可靠：先把混乱分开，把重要的事稳稳接住。这样的清醒不是冷淡，而是你在替自己和身边的人保留一条可以继续往前走的路。",
+    "group": "山屿云川 · 经典咖啡",
     "dairy": false,
     "profile": "rich",
     "target": [
@@ -384,8 +385,8 @@ const beans = [
     "result": "你最有辨识度的能力，是把“怎么办”放在“我好难受”前面。场面越乱，你越会自动寻找优先级、可执行动作和谁能接住哪一块。别人因此把你当作可靠的主心骨，却很少看见你只是把情绪暂存到了后台。在关系里，你不擅长空口安慰，更习惯用解决问题表达在乎；压力过大时，也容易把所有责任一起揽走。稳豆真正需要的，不是一句“别想太多”，而是有人愿意替你接过一项任务，让你也可以短暂失序。",
     "flavor": "无奶无糖、结构清楚，坚果与焦糖风味直接落地。它不靠额外修饰制造存在感，像你一样把可靠、有效和清醒放在第一位。",
     "tags": [
-      "意式咖啡风味体系",
-      "春咖咖",
+      "经典咖啡",
+      "山屿云川",
       "HOLD",
       "豆格"
     ]
@@ -394,8 +395,9 @@ const beans = [
     "name": "乐豆",
     "code": "LOL",
     "image": 2,
-    "drink": "玫瑰拿铁（柔和奶香，淡雅玫瑰香）",
-    "group": "意式咖啡风味体系",
+    "drink": "极边话梅（酸甜生津，果脯回味）",
+    "drinkMatch": "你很会把不顺利的事情重新讲一遍，直到它不再只剩下难过。极边话梅先有酸意，随后才慢慢浮出甜和回味，像你面对尴尬、失望和突发状况时的方式：不会假装什么都没发生，但会替这段经历找到一个轻一点的出口。你给别人带来的快乐，并不是因为你从来不痛，而是因为你愿意把痛加工成一句让人重新笑出来的话。",
+    "group": "山屿云川 · 极边乌龙特调",
     "dairy": true,
     "profile": "rich",
     "target": [
@@ -409,8 +411,8 @@ const beans = [
     "result": "你不是没有痛感，而是不愿让一件坏事永久垄断自己的叙事权。尴尬刚发生时，你可能和所有人一样难受；过一会儿，大脑便开始寻找其中最荒谬、最值得加工的部分。你经常是群体里让气氛重新流动的人，因此也容易被误解成“不够认真”。其实你比别人更清楚难受是什么，只是选择把它改造成能被讲述的故事。乐豆的独特之处，是笑并非逃避，而是一种把自己从低谷里重新打捞出来的能力。",
     "flavor": "玫瑰花香没有抹掉咖啡的苦，而是让苦拥有更柔和、更有余韵的表达，像你总能从糟糕现场里留下点有用的东西。",
     "tags": [
-      "意式咖啡风味体系",
-      "春咖咖",
+      "酸甜生津",
+      "山屿云川",
       "LOL",
       "豆格"
     ]
@@ -419,8 +421,9 @@ const beans = [
     "name": "暖豆",
     "code": "HUGS",
     "image": 3,
-    "drink": "蜂蜜拿铁（温润奶香，清甜蜂蜜感）",
-    "group": "意式咖啡风味体系",
+    "drink": "初心拿铁（奶香绵密，咖啡顺滑）",
+    "drinkMatch": "你常常比别人更早察觉一句话背后的疲惫，也更愿意为对方多做一点。初心拿铁没有把咖啡的苦味完全藏起来，只是用鲜奶把它包住，让靠近变得容易一些；这很像你的温柔：不是替别人否认难处，也不是急着把一切修好，而是告诉对方‘你可以先在这里喘口气’。你给人的安全感，来自理解之后仍然保有分寸。",
+    "group": "山屿云川 · 鲜奶咖啡",
     "dairy": true,
     "profile": "rich",
     "target": [
@@ -434,8 +437,8 @@ const beans = [
     "result": "你真正敏锐的不是“会安慰人”，而是能听见别人没有说出口的那一部分。语气变短、回复变慢、平时喜欢的东西突然失去兴趣，这些细小变化很难逃过你的感知。你习惯用记住细节、主动询问和实际照顾来维系关系，因此常被当作安全感来源。但长期处在“随时接住别人”的位置，也会让你忘记自己同样需要被照顾。暖豆的成长不是变冷，而是分清陪伴与拯救：可以温柔，但不必替每个人承担全部情绪。",
     "flavor": "蜂蜜的温润清甜和牛奶的包裹感，会柔和咖啡的酸苦，像你有分寸地照顾别人，而不是让世界假装没有苦。",
     "tags": [
-      "意式咖啡风味体系",
-      "春咖咖",
+      "鲜奶咖啡",
+      "山屿云川",
       "HUGS",
       "豆格"
     ]
@@ -444,8 +447,9 @@ const beans = [
     "name": "战豆",
     "code": "RETRY",
     "image": 4,
-    "drink": "澳白／馥芮白（咖啡感浓郁，奶感细腻）",
-    "group": "意式咖啡风味体系",
+    "drink": "滇红鲜奶茶（滇红醇厚，奶香顺滑）",
+    "drinkMatch": "你不是从来不会输，而是不愿意让一次输掉的结果替你定义全部。滇红的醇厚先把底子稳住，鲜奶再把口感拉得顺滑，像你一次次复盘之后的重新出发：保留真正有用的经验，放下已经无法改变的部分，再用更成熟的方式回到现场。你身上的勇气，不是咬牙硬撑，而是知道自己可以带着伤痕继续把事情做完。",
+    "group": "山屿云川 · 云南鲜奶茶",
     "dairy": true,
     "profile": "rich",
     "target": [
@@ -459,8 +463,8 @@ const beans = [
     "result": "你并非不怕失败，而是不肯让一次失败成为最终版本。别人想尽快忘掉的现场，你会重新调取：哪一步判断错了、哪条信息被忽略、下一轮要换什么参数。你的自尊不只来自“赢”，也来自看见自己确实比上一次更强。这样的你恢复力很高，却也容易把休息误认为退缩，把每次失利都变成必须追回的欠账。战豆需要记住：复盘是为了获得选择，不是为了永远惩罚自己；真正的重启，也包括知道什么时候可以先停一下。",
     "flavor": "咖啡存在感强、比例克制、核心集中。它不像盲目硬冲，更像调整完参数后重新上场的你。",
     "tags": [
-      "意式咖啡风味体系",
-      "春咖咖",
+      "滇红鲜奶",
+      "山屿云川",
       "RETRY",
       "豆格"
     ]
@@ -469,8 +473,9 @@ const beans = [
     "name": "硬豆",
     "code": "IMOK",
     "image": 5,
-    "drink": "Dirty 咖啡（冷热分层，浓醇回甜）",
-    "group": "意式咖啡风味体系",
+    "drink": "罗望子美式（酸甜醒目，咖啡清爽）",
+    "drinkMatch": "你看起来总能把自己照顾好，所以别人很容易忘记，你其实也会在意，也会受伤。罗望子的酸甜很有棱角，美式咖啡又把味道拉回清楚利落的骨架；它像你的边界，先让人看见原则和防线，熟悉之后才会发现里面藏着细腻的回甘。你不是拒绝亲近，只是不愿把柔软交给一个还没有学会珍惜的人。",
+    "group": "山屿云川 · 果咖美式",
     "dairy": true,
     "profile": "rich",
     "target": [
@@ -484,8 +489,8 @@ const beans = [
     "result": "你的情绪不是少，而是权限很高。你可以替人记住重要的日子、默默完成麻烦的事情，却很难直接说“我其实很在意”；受伤时也常用一句“没事”把入口锁上。别人可能觉得你冷、难靠近，熟悉你的人才知道，你只是害怕太早交出软肋。硬豆一旦信任谁，往往比表面更长情；可当边界被反复越过，也会安静地彻底退出。你的独特，不是永远坚硬，而是柔软始终存在，只会交给真正尊重它的人。",
     "flavor": "冷热碰撞、由浓到柔，先碰到防线，熟悉以后才喝到底下那层温柔。你的硬，更像一种保护。",
     "tags": [
-      "意式咖啡风味体系",
-      "春咖咖",
+      "罗望子美式",
+      "山屿云川",
       "IMOK",
       "豆格"
     ]
@@ -494,8 +499,9 @@ const beans = [
     "name": "圆豆",
     "code": "OKOK",
     "image": 6,
-    "drink": "拿铁咖啡（圆润顺滑，奶香柔和）",
-    "group": "意式咖啡风味体系",
+    "drink": "极边乌龙奶盖茶（乌龙清香，奶盖绵密）",
+    "drinkMatch": "你总能听见不同立场背后的那一点合理，也知道一句话怎样说出口才不会让人立刻关上门。极边乌龙的清香和奶盖的绵密各有自己的位置，却能在一杯里彼此托住；像你处理关系的方式，愿意让差异坐到同一张桌边，却不会为了表面的和谐抹掉自己的判断。你的圆融不是没有原则，而是有能力让原则被听见。",
+    "group": "山屿云川 · 极边乌龙特调",
     "dairy": true,
     "profile": "rich",
     "target": [
@@ -509,8 +515,8 @@ const beans = [
     "result": "你很少只看见一方的道理。发生冲突时，你会本能地寻找双方都能听懂的语言，让一句过硬的话换一种不伤人的落点。这并不代表你没有立场，而是你知道关系不必靠输赢维持。别人容易把你的体面误认成好说话，却不知道你心里一直有一张清楚的边界清单：小事可以让，原则不会消失；真正失望时，你甚至不争辩，只会安静撤回信任。圆豆最独特的地方，是能让差异同桌而坐，同时不把自己交出去。",
     "flavor": "浓缩与牛奶彼此融合、接受度高，却仍保留咖啡底色，像你能让不同立场坐到同一张桌上，也不会交出自己的边界。",
     "tags": [
-      "意式咖啡风味体系",
-      "春咖咖",
+      "乌龙奶盖",
+      "山屿云川",
       "OKOK",
       "豆格"
     ]
@@ -519,8 +525,9 @@ const beans = [
     "name": "浪豆",
     "code": "YOLO",
     "image": 7,
-    "drink": "花魁手冲（花果香明亮，果汁感清甜）",
-    "group": "埃塞俄比亚花魁单品豆",
+    "drink": "酸角香水柠檬茶（酸甜明亮，清爽有记忆点）",
+    "drinkMatch": "你对生活的感受力很高，一场晚风、一次临时起意，甚至一句恰好说对的话，都可能被你认真收藏。酸角和香水柠檬的酸甜一入口就醒来，清爽得不愿意躲在背景里；它像你对‘值得’的判断，不只看结果，也在意这一刻有没有真正被感受到。你不是不顾后果，只是不愿把人生过成一张只有正确答案的清单。",
+    "group": "山屿云川 · 云南果茶",
     "dairy": false,
     "profile": "bright",
     "target": [
@@ -534,8 +541,8 @@ const beans = [
     "result": "你判断一件事值不值得，常常不是先计算回报，而是问“以后还会不会记得”。你对气氛、场景和不可复制的瞬间格外敏感，愿意为了真正心动的体验临时改计划。别人可能觉得你冲动，其实你并非完全不计后果，只是不愿让人生只剩下正确却无聊的完成项。浪豆的魅力在于对生命有高响应：喜欢就靠近，感动就表达，想去的地方会认真想办法抵达。需要留意的是，别用一时的热烈替代长期选择，让自由也拥有可以返回的方向。",
     "flavor": "香气奔放、果汁感鲜明，每一口都很有“此刻”的存在感，像你愿意把值得记住的当下活得有声有色。",
     "tags": [
-      "埃塞俄比亚花魁单品豆",
-      "春咖咖",
+      "酸角柠檬",
+      "山屿云川",
       "YOLO",
       "豆格"
     ]
@@ -544,8 +551,9 @@ const beans = [
     "name": "慢豆",
     "code": "LOAD",
     "image": 8,
-    "drink": "云南萨其姆手冲（柑橘果香，红糖回甘）",
-    "group": "云南萨其姆单品豆",
+    "drink": "雪松蔓越莓冷萃（木质清香，莓果回甘）",
+    "drinkMatch": "你不是慢，只是不会把信任交给一场漂亮的开场。雪松的木质感安静而稳定，蔓越莓的果酸则要在冷萃里慢慢展开，像你确认一个人或一段关系的过程：先观察，再靠近，最后才把真正重要的部分放进去。你一旦认定，往往比别人想象得更长情；你需要的不是催促，而是时间一次次证明，对方还在。",
+    "group": "山屿云川 · 风味冷萃",
     "dairy": false,
     "profile": "bright",
     "target": [
@@ -559,8 +567,8 @@ const beans = [
     "result": "你不是进入关系慢，而是确认关系很认真。热情的开场、漂亮的承诺都不足以让你立刻交出信任，你更在意一个人能否在重复的小事里保持一致。刚认识时，你可能安静得像没有意见；熟悉以后，别人会发现你记得细节、回应稳定，也很少轻易撤回承诺。慢豆容易被误解成冷淡，其实你的投入成本很高，所以更谨慎选择长期名单。压力来临时，你习惯独自消化，偶尔也需要告诉重要的人：你的沉默是在加载，不是准备离开。",
     "flavor": "风味干净、层次逐步展开，越往后越能喝到稳定回甘，像你的关系慢热，却很少敷衍。",
     "tags": [
-      "云南萨其姆单品豆",
-      "春咖咖",
+      "雪松蔓越莓",
+      "山屿云川",
       "LOAD",
       "豆格"
     ]
@@ -569,8 +577,9 @@ const beans = [
     "name": "爱豆",
     "code": "IDOL",
     "image": 9,
-    "drink": "哥伦比亚瑰夏手冲（茉莉柑橘香，清雅细腻）",
-    "group": "哥伦比亚瑰夏单品豆",
+    "drink": "茉莉鲜奶茶（茉莉清香，奶香顺滑）",
+    "drinkMatch": "你对美好有自己的辨认方式。茉莉的香气很轻，却需要恰好的温度和比例才能被认真喝见；它像你对生活和关系的期待，不是要求所有事情都完美，而是希望那些珍贵的部分不要总靠委屈自己来换取。你愿意欣赏别人，也愿意把自己照顾得体面，因为你知道，被认真对待不是奢侈，而是一段关系应该有的基本温度。",
+    "group": "山屿云川 · 鲜奶茶",
     "dairy": false,
     "profile": "bright",
     "target": [
@@ -584,8 +593,8 @@ const beans = [
     "result": "你对“值得”这件事有自己的标准。无论关系、工作还是生活环境，你都不愿长期待在只消耗、不尊重也没有成长的位置。这不是自恋，而是你知道自己的精力有限，应该投向能够产生回应和意义的地方。你愿意欣赏别人，也乐于认真经营自己；但当外界持续贬低你的感受时，你会迅速收回投入。爱豆容易被误解成挑剔或难取悦，其实你只是拒绝把委屈当作诚意。你的功课，是把标准说出来，而不是等别人猜到以后才决定失望。",
     "flavor": "香气清雅、标准细致，不靠长期委屈换取表现。你不是难以取悦，只是知道真正好的状态需要被认真对待。",
     "tags": [
-      "哥伦比亚瑰夏单品豆",
-      "春咖咖",
+      "茉莉鲜奶",
+      "山屿云川",
       "IDOL",
       "豆格"
     ]
@@ -594,8 +603,9 @@ const beans = [
     "name": "反骨豆",
     "code": "WHY",
     "image": 10,
-    "drink": "酸角特调（酸甜醒目，咖啡感清爽）",
-    "group": "花魁基底创意特调",
+    "drink": "荆芥冷萃（清爽草本，冷冽回甘）",
+    "drinkMatch": "你很难对一个明显不合理的答案假装满意。荆芥的草本感不走熟悉的甜香路线，冷萃却让它保持清爽、干净，不会为了特别而特别；这像你的反骨：你提出问题，不是为了把一切推倒，而是因为你真的相信还有更好的解法。你让人重新思考，也让旧规则有机会被改成更适合现在的样子。",
+    "group": "山屿云川 · 草本冷萃",
     "dairy": false,
     "profile": "bright",
     "target": [
@@ -609,8 +619,8 @@ const beans = [
     "result": "你不是为了显得不同才反对，而是很难假装没看见系统里的漏洞。“大家一直都这样”对你不是答案，只会引出更多问题：为什么、凭什么、有没有更合理的做法。你的质疑通常带着行动冲动，看见不对劲时，会忍不住重新设计一套规则。别人可能觉得你难管、爱抬杠，却忽略你真正反感的是没有逻辑的服从。反骨豆的稀有之处，是不满往往自带方案；只是压力过大时，也要小心把所有相处都变成辩论，给直觉和情感留下不必证明的空间。",
     "flavor": "它不是为了猎奇而不同，而是在旧结构里提出一种有地域性、也能够成立的新解法，像你的质疑通常带着方案。",
     "tags": [
-      "花魁基底创意特调",
-      "春咖咖",
+      "荆芥冷萃",
+      "山屿云川",
       "WHY",
       "豆格"
     ]
@@ -619,8 +629,9 @@ const beans = [
     "name": "糖豆",
     "code": "SUGR",
     "image": 11,
-    "drink": "苹果奶盖（苹果清甜，咸甜奶盖）",
-    "group": "花魁基底创意特调",
+    "drink": "玫瑰普洱奶盖茶（玫瑰馥郁，奶盖醇厚）",
+    "drinkMatch": "你不是看不见生活的辛苦，只是不愿让辛苦占满全部的空间。玫瑰的香气先把心情提亮，普洱的醇厚把底子稳住，奶盖则像给平凡的一天加上一层柔软的奖励。你总能发现值得庆祝的小事，也愿意把这点甜分给身边的人。你带来的快乐不是轻飘飘的热闹，而是一种很实际的提醒：今天已经够辛苦了，我们可以对自己好一点。",
+    "group": "山屿云川 · 普洱奶盖茶",
     "dairy": true,
     "profile": "bright",
     "target": [
@@ -634,8 +645,8 @@ const beans = [
     "result": "你不是看不见烦恼，而是不允许烦恼在生活里无限续杯。发现好吃的店、好笑的事情或值得庆祝的小进展，你会很自然地想分享给身边的人。你擅长给普通日子增加仪式感，也是群体里让快乐被看见、被放大的那一个。糖豆的明亮并不等于天真，它更像一种主动选择：世界已经够沉重，所以你愿意亲手制造一点甜。需要被理解的是，持续负责热闹也会累；当你突然安静时，不代表快乐消失，只是扩音器也需要暂时充电。",
     "flavor": "苹果清甜、咸甜奶盖和咖啡层层出现，让普通的一杯变成一次小型庆祝，像你总想亲手再给今天加一点快乐。",
     "tags": [
-      "花魁基底创意特调",
-      "春咖咖",
+      "玫瑰普洱",
+      "山屿云川",
       "SUGR",
       "豆格"
     ]
@@ -644,8 +655,9 @@ const beans = [
     "name": "独豆",
     "code": "SOLO",
     "image": 12,
-    "drink": "紫苏芭乐迷迭香特调（芭乐果香，紫苏草本感）",
-    "group": "花魁基底创意特调",
+    "drink": "玫瑰普洱鲜奶茶（玫瑰馥郁，普洱醇香）",
+    "drinkMatch": "你不需要一杯所有人都会喜欢的饮品来证明自己的选择。玫瑰的香气、普洱的沉稳和鲜奶的柔和放在一起，并不是最普通的组合，却有一套只属于自己的秩序；它像你对生活的坚持，宁愿少一点迎合，也要让每个部分都保留真实的位置。你并非不需要别人，只是希望靠近你的人，愿意理解你的安静，而不是急着把你改成更容易相处的样子。",
+    "group": "山屿云川 · 普洱鲜奶茶",
     "dairy": false,
     "profile": "bright",
     "target": [
@@ -659,8 +671,8 @@ const beans = [
     "result": "你不排斥关系，只是不愿为了被接纳而使用别人的默认设置。比起热闹但浅的来往，你更喜欢少数能够尊重边界、理解沉默的人。你有自己的生活系统、审美偏好和判断路径，独处时反而更容易恢复能量、完成深度思考。别人可能把这种自洽看成难接近，其实你并不需要刻意特殊，只是拒绝用相同证明正常。独豆的课题，是别让独立慢慢变成拒绝帮助：真正属于你的生活，也可以为可信的人保留入口。",
     "flavor": "元素少见却自成体系，不需要通过故意不同证明自己。像你一样，只要逻辑成立，就有权保留自己的味道。",
     "tags": [
-      "花魁基底创意特调",
-      "春咖咖",
+      "玫瑰普洱",
+      "山屿云川",
       "SOLO",
       "豆格"
     ]
@@ -978,7 +990,10 @@ function renderResult() {
   document.querySelector("#result-group").textContent = bean.group;
   document.querySelector("#result-evidence").textContent = bean.evidence;
   document.querySelector("#result-copy").textContent = bean.result;
-  document.querySelector("#result-flavor").textContent = bean.flavor;
+  document.querySelector("#result-flavor").textContent = bean.drinkMatch;
+  const resultDrinkImage = document.querySelector("#result-drink-image");
+  resultDrinkImage.src = DRINK_IMAGES[bean.code];
+  resultDrinkImage.alt = `${bean.drink} 产品图`;
   document.querySelector("#flavor-tags").innerHTML = bean.tags.map((tag) => `<span>${tag}</span>`).join("");
   const preferenceNote = getPreferenceNote(bean);
   document.querySelector("#preference-copy").textContent = preferenceNote;
@@ -1018,7 +1033,7 @@ function renderForestResult(bean) {
   document.querySelector("#forest-result-line").textContent = bean.tagline;
   document.querySelector("#forest-result-drink").textContent = bean.drink;
   document.querySelector("#forest-result-group").textContent = bean.group;
-  document.querySelector("#forest-result-flavor").textContent = bean.flavor;
+  document.querySelector("#forest-result-flavor").textContent = bean.drinkMatch;
   document.querySelector("#forest-result-copy").textContent = bean.result;
   document.querySelector("#forest-result-evidence").textContent = bean.evidence;
   const sheetImage = document.querySelector("#forest-sheet-image");
@@ -1055,7 +1070,7 @@ function renderForestResult(bean) {
     chip.textContent = tag;
     drinkTagsNode.appendChild(chip);
   });
-  document.querySelector("#detail-board-match").textContent = bean.flavor;
+  document.querySelector("#detail-board-match").textContent = bean.drinkMatch;
   const drinkImage = document.querySelector("#detail-board-drink-image");
   drinkImage.src = DRINK_IMAGES[bean.code];
   drinkImage.alt = `${bean.drink} 实拍图`;
@@ -1105,6 +1120,9 @@ function renderPosterResult(bean) {
   document.querySelector("#poster-result-group").textContent = bean.group;
   document.querySelector("#poster-result-detail").textContent = bean.result;
   document.querySelector("#poster-flavor-tags").innerHTML = bean.tags.slice(0, 3).map((tag) => `<span>${tag}</span>`).join("");
+  const posterDrinkImage = document.querySelector("#poster-drink-image");
+  posterDrinkImage.src = DRINK_IMAGES[bean.code];
+  posterDrinkImage.alt = `${bean.drink} 产品图`;
 
   const mobileImage = document.querySelector("#mobile-result-image");
   mobileImage.src = `assets/bean-${bean.image}.png`;
@@ -1115,7 +1133,10 @@ function renderPosterResult(bean) {
   document.querySelector("#mobile-result-drink").textContent = bean.drink;
   document.querySelector("#mobile-result-group").textContent = bean.group;
   document.querySelector("#mobile-flavor-tags").innerHTML = bean.tags.map((tag) => `<span>${tag}</span>`).join("");
-  document.querySelector("#mobile-result-flavor").textContent = bean.flavor;
+  document.querySelector("#mobile-result-flavor").textContent = bean.drinkMatch;
+  const mobileDrinkImage = document.querySelector("#mobile-drink-image");
+  mobileDrinkImage.src = DRINK_IMAGES[bean.code];
+  mobileDrinkImage.alt = `${bean.drink} 产品图`;
   document.querySelector("#mobile-result-detail").textContent = bean.result;
   document.querySelector("#mobile-result-evidence").textContent = bean.evidence;
   const preferenceNote = getPreferenceNote(bean);
@@ -1227,7 +1248,7 @@ function renderBeanRelations(bean) {
 }
 
 function getPreferenceNote(bean) {
-  return `${bean.drink}是你的豆格在春咖咖里的杯中化身。推荐表达的是气质联想，不保证每个人一定喜欢；如有忌口、乳糖或咖啡因顾虑，请以实际身体需求为先。`;
+  return `${bean.drink}是你的豆格在山屿云川里的杯中映照。推荐表达的是气质联想，不保证每个人一定喜欢；如有忌口、乳糖或咖啡因顾虑，请以实际身体需求为先。`;
 }
 
 function updateShareUrl() {
