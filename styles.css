@@ -6545,6 +6545,26 @@ body[data-screen="result-screen"] #result-screen .forest-result-layout {
   margin: 0 0 9px;
 }
 
+#result-screen .detail-board-drink .springcafe-brand-panel {
+  width: clamp(74px, 12vw, 112px);
+  aspect-ratio: 1.48;
+  justify-content: center;
+  padding: clamp(5px, 0.8vw, 8px) clamp(7px, 1vw, 11px);
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+#result-screen .detail-board-drink .springcafe-brand-panel img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: contain;
+}
+
+#result-screen .detail-board-drink .springcafe-brand-panel span {
+  display: none;
+}
+
 .springcafe-brand-compact {
   gap: 6px;
   padding: 4px 8px 4px 6px;
