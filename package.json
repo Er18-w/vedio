@@ -11,7 +11,7 @@
     "build:edgeone": "node scripts/build-edgeone.mjs",
     "start": "vinext start",
     "test": "node --test tests/rendered-html.test.mjs",
-    "check": "pnpm run build && pnpm run test",
+    "check": "pnpm run build:edgeone && pnpm run test",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern .vinext --ignore-pattern .wrangler --ignore-pattern .pnpm-store",
     "db:generate": "drizzle-kit generate"
   },
